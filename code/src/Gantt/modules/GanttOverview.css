@@ -1,0 +1,142 @@
+.ganttOverview {
+  position: relative;
+  transition: all 0.15s linear;
+  overflow: hidden;
+}
+
+.ganttOverview-box {
+  position: relative;
+}
+
+.ganttOverview-box .ganttOverview-arrrow {
+  transform: rotate(90deg) translateY(3px);
+}
+
+.ganttOverview-arrrow-box {
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 50px;
+  cursor: pointer;
+  background: #dadbde;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  transform: translateY(-50%);
+}
+
+.ganttOverview-close {
+  position: relative;
+  width: 0 !important;
+  transition: all 0.15s linear;
+  overflow: hidden;
+}
+
+.ganttOverview-head {
+  display: flex;
+  padding: 0 10px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.ganttOverview-head .ganttOverview-head-item {
+  flex: 1;
+  height: 60px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 60px;
+  text-align: center;
+}
+
+.ganttOverview-body {
+  padding: 10px 0;
+  overflow: hidden;
+  background: #f6f7f9;
+  border-top: 1px solid var(--borderColor);
+}
+
+.ganttOverview-body-cell {
+  margin-bottom: 10px;
+}
+
+.ganttOverview-body-cell:last-child {
+  margin-bottom: 0;
+}
+
+.ganttOverview-body-cell-filed {
+  display: flex;
+  padding: 0 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 6px 1px rgba(0 0 0 /5%);
+}
+
+.ganttOverview-body-cell-open {
+  position: relative;
+  padding: 0 10px;
+  overflow: hidden;
+}
+
+.ganttOverview-body-cell-open-cell {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 30px;
+  padding-left: 10px;
+  line-height: 30px;
+}
+
+.ganttOverview-body-cell-open-cell::before {
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  content: " ";
+  background-color: rgba(126 134 142 /24%);
+}
+
+.ganttOverview-body-cell .ganttOverview-body-cell-open-cell:first-child {
+  margin-top: 15px;
+}
+
+.ganttOverview-body-cell-open-cell-item {
+  flex: 1;
+  font-size: 13px;
+}
+
+.ganttOverview-body-cell-open-cell-item-first {
+  display: flex;
+  align-items: center;
+}
+
+.ganttOverview-body-cell-item {
+  flex: 1;
+  height: 40px;
+  font-size: 15px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.quan {
+  position: relative;
+  width: 4px;
+  height: 4px;
+  margin-right: 2px;
+  background: #007fff;
+  border-radius: 50%;
+}
+
+.quan::before {
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 10px;
+  height: 1px;
+  content: " ";
+  background-color: rgba(126 134 142 /24%);
+  transform: translateY(-50%);
+}

@@ -1,0 +1,360 @@
+/* "finish" | "wait" | "progress" | "overtime"; */
+
+.gantt {
+  --borderColor: rgba(126 134 142 /16%);
+  --progressColor: #007fff;
+  --finishColor: #00b042;
+  --waitColor: #e0e2e4;
+  --overtimeColor: #f54040;
+
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--borderColor);
+  border-radius: 8px;
+}
+
+.gantt-right {
+  flex: 1;
+  border-left: 1px solid var(--borderColor);
+}
+
+.gantt-right-body-head {
+  display: flex;
+  flex-direction: column;
+  height: 60px;
+}
+
+.gantt-right-body-head .gantt-right-body-head-list {
+  display: flex;
+  flex: 1;
+}
+
+.gantt-right-body-head .gantt-right-body-head-list .gantt-right-head-item-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.gantt-right-body {
+  overflow-x: auto;
+}
+
+.gantt-right-body-item {
+  padding: 3px 10px;
+  cursor: pointer;
+  background-color: transparent;
+  border-left: 1px solid rgba(126 134 142 / 16%);
+}
+
+.gantt-right-body-cell .gantt-right-body-item:first-child {
+  border-left: 0;
+}
+
+.gantt-right-body-cell {
+  position: relative;
+  display: flex;
+}
+
+.gantt-right-body-cell:last-child .gantt-right-body-item {
+  border-bottom: 0;
+}
+
+.progressBar {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 6px;
+  opacity: 1;
+  transition: opacity 0.2s linear;
+  transform: translateY(-50%);
+}
+
+.progressBar-finish {
+  background: #d9f5e5;
+  border: 1px solid #9ce2c3;
+}
+
+.progressBar-finishOvertime {
+  background: #d9f5e5;
+  border: 1px solid #9ce2c3;
+}
+
+.progressBar-wait {
+  background: #f6f6f6;
+  border: 1px solid var(--waitColor);
+}
+
+.progressBar-progress {
+  background: #ebf3ff;
+  border: 1px solid #c2d9ff;
+}
+
+.progressBar-overtime {
+  background: #fdd9d9;
+  border: 1px solid #fbb2b2;
+}
+
+.progressBar-default {
+  height: 30px;
+  background: var(--progressColor);
+  border-radius: 4px;
+}
+
+.progressBar-active {
+  z-index: 2;
+  height: 30px;
+  background: var(--progressColor);
+  border-radius: 4px;
+}
+
+.progressBar-box {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+}
+
+.progress-text {
+  min-width: 70px;
+  margin-left: 5px;
+  line-height: 30px;
+  color: var(--finishColor);
+  font-size: 14px;
+  text-align: center;
+  background: #9ce2c3;
+  border-radius: 4px;
+}
+
+.progressBar-overtime .progress-text {
+  color: var(--overtimeColor);
+  background: #fbb2b2;
+}
+
+.progressBar-overtime .progressBar-default {
+  background: var(--overtimeColor);
+}
+
+.progressBar-overtime .progressBar-active {
+  position: absolute;
+  left: 0;
+  background: var(--progressColor);
+}
+
+.progressBar-progress .progress-text {
+  color: var(--progressColor);
+  background: #c2d9ff;
+}
+
+.progressBar-progress .progressBar-default {
+  background: #c2d9ff;
+}
+
+.progressBar-progress .progressBar-active {
+  position: absolute;
+  left: 0;
+  background: var(--progressColor);
+}
+
+.progressBar-wait .progress-text {
+  color: #171a1d;
+  background: var(--waitColor);
+}
+
+.progressBar-wait .progressBar-default {
+  background: var(--waitColor);
+}
+
+.progressBar-wait .progressBar-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--waitColor);
+}
+
+.progressBar-finish .progressBar-default {
+  background: #9ce2c3;
+}
+
+.progressBar-finish .progressBar-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--finishColor);
+}
+
+.progressBar-finishOvertime .progressBar-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--finishColor);
+}
+
+.progressBar-overTimeWidth {
+  z-index: 2;
+  background: var(--overtimeColor);
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.gantt-right-body-head-content {
+  position: relative;
+}
+
+.gantt-right-body-head-content-mark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  height: 100%;
+}
+
+.gantt-right-body-head-content-mark-item {
+  border-left: 1px solid var(--borderColor);
+  border-top: 1px solid var(--borderColor);
+  box-sizing: border-box;
+}
+
+.gantt-right-body-head-content-mark-item:first-child {
+  border-left: 0;
+}
+
+.progressBar-default-child {
+  height: 18px;
+  border-radius: 2px;
+}
+
+.progressBar-active-child {
+  height: 18px;
+  border-radius: 2px;
+}
+
+.progressBar-overTimeWidth-child {
+  position: relative;
+  height: 18px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+.gantt-right-body-head-year-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--borderColor);
+  border-left: 1px solid var(--borderColor);
+}
+
+.gantt-right-body-head-year-item:first-child {
+  border-left: 0;
+}
+
+.helpLine-line {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  border-left: 1px solid var(--progressColor);
+  z-index: 99;
+}
+
+.progressBar:hover ~ .helpLine-line {
+  display: block;
+}
+
+.helpLine-line-finish {
+  border-left-color: var(--finishColor);
+}
+
+.helpLine-line-overtime {
+  border-left-color: var(--progressColor);
+}
+
+.helpLine-line-progress {
+  border-left-color: var(--progressColor);
+}
+
+.helpLine-line-wait {
+  border-left-color: var(--waitColor);
+}
+
+.helpLine-line-finishOvertime {
+  border-left-color: var(--finishColor);
+}
+
+.gantt-animation {
+  opacity: 0.3;
+  transition: all 0.2s linear;
+}
+
+.overtimeRender {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+}
+
+.progressBar-render {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  height: 30px;
+}
+
+.progressBar-render-child {
+  height: 18px;
+}
+
+.gantt-right-body-cell-isEmpty {
+  height: 15px;
+}
+
+.gantt-right-body-cell-parentIsEmpty {
+  height: 10px;
+}
+
+.gantt-right-body-cell-isParent-true {
+  height: 40px;
+}
+
+.gantt-right-body-cell-isParent-false {
+  height: 30px;
+}
+
+.gantt-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(0 0 0 / 10%);
+}
+
+.gantt-loading-svg {
+  width: 45px;
+  height: 45px;
+  fill: currentcolor;
+  animation: rotate-loading 0.9s linear infinite;
+}
+
+@keyframes rotate-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

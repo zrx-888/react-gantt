@@ -1,0 +1,39 @@
+.main-arrow {
+  --bg-color: transparent;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  position: relative;
+}
+
+.main-arrow::before {
+  position: absolute;
+  top: 10px;
+  left: 4px;
+  width: 8px;
+  height: 2px;
+  content: "";
+  background: var(--bg-color);
+  transition: transform 0.3s;
+  transform: rotate(45deg);
+}
+
+.main-arrow::after {
+  position: absolute;
+  top: 10px;
+  left: 8px;
+  width: 8px;
+  height: 2px;
+  content: "";
+  background: var(--bg-color);
+  transition: transform 0.3s;
+  transform: rotate(-45deg);
+}
+
+.main-arrow.arrow_open::before {
+  transform: rotate(-45deg) translateY(-1px) translateX(1px);
+}
+
+.main-arrow.arrow_open::after {
+  transform: rotate(45deg) translateY(-1px) translateX(-1px);
+}
