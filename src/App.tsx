@@ -24,10 +24,10 @@ const list: GanttDataProps[] = [
     time2: "结束时间",
     renderHead: () => <div>略略略</div>,
     renderoBar: (width, activeWidth, surplusWidth, overtimeWidth) => {
-      console.log(width + "进度条宽度");
-      console.log(activeWidth + "选中进度条宽度");
-      console.log(surplusWidth + "剩余进度条宽度");
-      console.log(overtimeWidth + "超出的宽度");
+      // console.log(width + "进度条宽度");
+      // console.log(activeWidth + "选中进度条宽度");
+      // console.log(surplusWidth + "剩余进度条宽度");
+      // console.log(overtimeWidth + "超出的宽度");
       return <div></div>;
     },
   },
@@ -45,7 +45,7 @@ const list: GanttDataProps[] = [
       {
         start: false,
         startTime: "2024-03-22 00:00:00",
-        endTime: "2024-04-20 00:00:00",
+        endTime: "2024-04-20 12:00:00",
         finishTime: null,
         dept: "前端",
         num: "2人",
@@ -174,10 +174,7 @@ function App() {
   const ganttRef = useRef<GanttPropsRefProps>(null);
   return (
     <div
-      style={{
-        height: "200px",
-        overflowY: "auto",
-      }}
+      
     >
       <Gantt data={list} head={head} ref={ganttRef} />
       <button

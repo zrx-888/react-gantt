@@ -47,6 +47,10 @@ const GanttOverview: React.FC<{
         <div
           style={{
             width: headWidth,
+            height:"100%",
+            display:"flex",
+            flexDirection:"column",
+            overflow:"hidden"
           }}
         >
           <div className="ganttOverview-head">
@@ -76,6 +80,8 @@ const GanttOverview: React.FC<{
               paddingBottom: headBodyPaddingY + "px",
             }}
           >
+            <div className="ganttOverview-body-height">
+
             {list.map((item, index) => {
               return (
                 <div key={index} className="ganttOverview-body-cell">
@@ -169,6 +175,8 @@ const GanttOverview: React.FC<{
                 </div>
               );
             })}
+            </div>
+
           </div>
         </div>
       </div>

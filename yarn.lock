@@ -1333,10 +1333,10 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-gantt-lightweight@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/react-gantt-lightweight/-/react-gantt-lightweight-0.0.3.tgz"
-  integrity sha512-ZREf/EyRWCA/KL5LVlmpqoUyqFqeF1vySyUyjcTZzasweS/wU/5THjxowd0bYUwG2oMnEuDWRZ7++ZkxG4qU8Q==
+react-gantt-lightweight@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.npmmirror.com/react-gantt-lightweight/-/react-gantt-lightweight-0.0.4.tgz"
+  integrity sha512-NDlNQUFm4CSDW5t0Tz9tYDZUbR7BfLZn2ivEUm4BteiW/cjDp3wSCO6+ll9KC4KYRHi0wUfgQnDj5FjwyeZTpQ==
   dependencies:
     "@rollup/plugin-typescript" "^11.1.6"
     dayjs "^1.11.10"

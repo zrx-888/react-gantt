@@ -70,7 +70,7 @@ const HelpLine: React.FC<{
   return (
     <>
       {/* 开始时间 */}
-      <div
+      {/* <div
         className={`helpLine-line helpLine-line-${item.status}`}
         style={{
           // left: rect.left + 5 + "px",
@@ -78,20 +78,20 @@ const HelpLine: React.FC<{
           left: item.left + 5 + "px",
           height: rect.height + "px"
         }}
-      ></div>
+      ></div> */}
 
       {/* 结束时间 */}
-      <div
+      {/* <div
         className={`helpLine-line helpLine-line-${item.status}`}
         style={{
           left: item.left + 5 + item.width + "px",
           top: rect.top + "px",
           height: rect.height + "px"
         }}
-      ></div>
+      ></div> */}
 
       {/* 超时红线 */}
-      {(item.status === "finishOvertime" || item.status === "overtime") && item.overtimeWidth && (
+      {/* {(item.status === "finishOvertime" || item.status === "overtime") && item.overtimeWidth && (
         <div
           className={`helpLine-line helpLine-line-${item.status}`}
           style={{
@@ -101,7 +101,7 @@ const HelpLine: React.FC<{
             height: rect.height + "px"
           }}
         ></div>
-      )}
+      )} */}
     </>
   );
 });
