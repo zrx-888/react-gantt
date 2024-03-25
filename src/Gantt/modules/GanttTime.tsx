@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   GanttDataProps,
   GanttStatusListProps,
@@ -40,6 +40,7 @@ const GanttTime: React.FC<{
   isInit: boolean;
   showLine: boolean;
   statusList?: GanttStatusListProps[];
+  onChangeScrollBarHeight: (e: number) => void;
 }> = ({
   list,
   headBodyPaddingY,
@@ -47,6 +48,7 @@ const GanttTime: React.FC<{
   isInit,
   showLine,
   statusList = defaultStatus,
+  onChangeScrollBarHeight,
 }) => {
   const [yaerList, setYaerList] = useState<YearListIF[]>([]);
   const [days, setDays] = useState<string[]>([]);
@@ -60,6 +62,7 @@ const GanttTime: React.FC<{
     height: 0,
     scrollWidth: 0,
     scrollHeight: 0,
+    scrollBarHeight: 0,
   });
 
   const [maximumDate, setMaximumDate] = useState({
@@ -132,7 +135,6 @@ const GanttTime: React.FC<{
     const year = getYearMonth(maximumDate.startDate, maximumDate.endDate);
     setYaerList(year);
     const day = getDaysList(maximumDate.startDate, maximumDate.endDate);
-
     const headWidth = document.getElementById("gantt-right")?.offsetWidth;
     if (headWidth) {
       setHeadWidth(headWidth);
@@ -269,37 +271,207 @@ const GanttTime: React.FC<{
     setGanttProgressBarId("");
   };
 
-  // useEffect(() => {
-  //   const handleWindowResize = () => {
-  //     initGantt();
-  //   };
-  //   window.addEventListener("resize", debounce(handleWindowResize, 200));
-  //   return () => {
-  //     window.removeEventListener("resize", handleWindowResize);
-  //   };
-  // }, []);
+  useEffect(() => {
+    const handleWindowResize = () => {
+      initGantt();
+    };
+    window.addEventListener("resize", debounce(handleWindowResize, 200));
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (bodyContentRef.current) {
-      console.log(
-        bodyContentRef.current.offsetHeight,
-        bodyContentRef.current.clientHeight
-      );
-
       setBodyRect({
         scrollHeight: bodyContentRef.current.scrollHeight,
         height: bodyContentRef.current.offsetHeight,
         scrollWidth:
           bodyContentRef.current.offsetWidth -
           bodyContentRef.current.clientWidth,
+        scrollBarHeight:
+          bodyContentRef.current.offsetHeight -
+          bodyContentRef.current.clientHeight,
       });
-      bodyContentRef.current.addEventListener("scroll", (event:any) => {
-        document.getElementsByClassName("gantt-right-body-head")[0].scrollLeft =
-          event.target.scrollLeft;
-        // 处理滚动事件
+      onChangeScrollBarHeight(
+        bodyContentRef.current.offsetHeight -
+          bodyContentRef.current.clientHeight
+      );
+      bodyContentRef.current.addEventListener("scroll", (event) => {
+        if (event.target) {
+          document.getElementsByClassName(
+            "gantt-right-body-head"
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+          )[0].scrollLeft = event.target.scrollLeft;
+          document.getElementsByClassName(
+            "ganttOverview-body-height"
+            // eslint-disable-next-line  @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+          )[0].scrollTop = event.target.scrollTop;
+        }
       });
     }
   }, [bodyContentRef.current]);
+  const DataMome = useMemo(() => {
+    return (
+      <>
+        {data.map((item, index) => {
+          return item.isEmpty ? (
+            <div
+              key={index}
+              className="gantt-right-body-cell gantt-right-body-cell-isEmpty"
+            ></div>
+          ) : item.parentIsEmpty ? (
+            <div
+              key={index}
+              className="gantt-right-body-cell gantt-right-body-cell-parentIsEmpty"
+            ></div>
+          ) : !item.isParent ? (
+            <div
+              key={index}
+              className="gantt-right-body-cell gantt-right-body-cell-isParent-false"
+            >
+              <div
+                id={"gantt-progressBar-Id" + index}
+                onMouseEnter={() =>
+                  handleMouseEnter("gantt-progressBar-Id" + index)
+                }
+                onMouseLeave={handleMouseLeave}
+                className={`progressBar progressBar-${item.status}`}
+                style={{
+                  padding: "5px",
+                  border: "0",
+                  background: "transparent",
+                  left: item.left + "px",
+                }}
+              >
+                <div className="progressBar-box">
+                  <div className="progressBar-render progressBar-render-child">
+                    {item.renderoBar &&
+                      item.renderoBar(
+                        item.width,
+                        item.width * item.progress,
+                        item.width - item.width * item.progress,
+                        item.overtimeWidth
+                      )}
+                  </div>
+                  <div
+                    className="progressBar-default progressBar-default-child"
+                    style={{ width: item.width + "px" }}
+                  >
+                    <div
+                      className="progressBar-active progressBar-active-child"
+                      style={{
+                        width: item.progress * 100 + "%",
+                      }}
+                    ></div>
+                  </div>
+                  {(item.status === "overtime" ||
+                    item.status === "finishOvertime") &&
+                    item.overtimeWidth && (
+                      <div
+                        className="progressBar-overTimeWidth progressBar-overTimeWidth-child"
+                        style={{
+                          width: item.overtimeWidth + "px",
+                        }}
+                      >
+                        <div className="overtimeRender">
+                          {item.renderOvertime &&
+                            item.renderOvertime(item.overtimeWidth)}
+                        </div>
+                      </div>
+                    )}
+                </div>
+              </div>
+              {showLine &&
+                ganttProgressBarId === `gantt-progressBar-Id${index}` && (
+                  <HelpLine
+                    ganttProgressBarId={ganttProgressBarId}
+                    item={{
+                      ...item,
+                      ganttProgressBarId: "gantt-progressBar-Id" + index,
+                    }}
+                  />
+                )}
+            </div>
+          ) : item.isParent ? (
+            <div
+              key={index}
+              className="gantt-right-body-cell gantt-right-body-cell-isParent-true"
+            >
+              <div
+                id={"gantt-progressBar-Id" + index}
+                onMouseEnter={() =>
+                  handleMouseEnter("gantt-progressBar-Id" + index)
+                }
+                onMouseLeave={handleMouseLeave}
+                className={`progressBar progressBar-${item.status}`}
+                style={{
+                  left: item.left + "px",
+                }}
+              >
+                <div className="progressBar-box">
+                  <div className="progressBar-render">
+                    {item.renderoBar &&
+                      item.renderoBar(
+                        item.width,
+                        item.width * item.progress,
+                        item.width - item.width * item.progress,
+                        item.overtimeWidth
+                      )}
+                  </div>
+                  <div
+                    className="progressBar-default"
+                    style={{
+                      width: item.width + "px",
+                    }}
+                  >
+                    <div
+                      className="progressBar-active"
+                      style={{
+                        width: item.progress * 100 + "%",
+                      }}
+                    ></div>
+                  </div>
+                  {(item.status === "overtime" ||
+                    item.status === "finishOvertime") &&
+                    item.overtimeWidth && (
+                      <div
+                        className="progressBar-overTimeWidth"
+                        style={{
+                          width: item.overtimeWidth + "px",
+                        }}
+                      >
+                        <div className="overtimeRender">
+                          {item.renderOvertime &&
+                            item.renderOvertime(item.overtimeWidth)}
+                        </div>
+                      </div>
+                    )}
+                </div>
+                <div className="progress-text">
+                  {statusList.filter((e) => item.status === e.status)[0].text}
+                </div>
+              </div>
+              {showLine &&
+                ganttProgressBarId === `gantt-progressBar-Id${index}` && (
+                  <HelpLine
+                    ganttProgressBarId={ganttProgressBarId}
+                    item={{
+                      ...item,
+                      ganttProgressBarId: "gantt-progressBar-Id" + index,
+                    }}
+                  />
+                )}
+            </div>
+          ) : (
+            <></>
+          );
+        })}
+      </>
+    );
+  }, [data, ganttProgressBarId]);
 
   return (
     <>
@@ -310,7 +482,7 @@ const GanttTime: React.FC<{
             id="gantt-right-body"
             style={{ width: headWidth + "px" }}
           >
-            <div style={{ display: "flex" }}>
+            <div className="gantt-right-body-head-box ">
               <div className="gantt-right-body-head">
                 <div className="gantt-right-body-head-list gantt-right-body-head-year">
                   {yaerList.map((item, index) => {
@@ -342,199 +514,48 @@ const GanttTime: React.FC<{
                   })}
                 </div>
               </div>
-              <div style={{ width: bodyRect.scrollWidth }}></div>
+              <div
+                className="gantt-right-head-scrollBarWidth"
+                style={{ width: bodyRect.scrollWidth }}
+              ></div>
             </div>
 
             <div className="gantt-right-body-body">
-              <div className="gantt-right-body-content" ref={bodyContentRef}>
-                <div className="gantt-right-body-content-mark">
-                  {days.map((_, index) => {
-                    return (
-                      <div
-                        style={{
-                          width: width + "px",
-                          minWidth: width + "px",
-                          height: bodyRect.scrollHeight + "px",
-                        }}
-                        className="gantt-right-body-content-mark-item"
-                        key={index}
-                      ></div>
-                    );
-                  })}
+              <div style={{ flex: 1, overflow: "hidden" }}>
+                <div
+                  className="gantt-right-body-content"
+                  ref={bodyContentRef}
+                  id="gantt-right-body-content"
+                >
+                  <div className="gantt-right-body-content-mark">
+                    {days.map((_, index) => {
+                      return (
+                        <div
+                          style={{
+                            width: width + "px",
+                            minWidth: width + "px",
+                            height: bodyRect.scrollHeight + "px",
+                          }}
+                          className="gantt-right-body-content-mark-item"
+                          key={index}
+                        ></div>
+                      );
+                    })}
+                  </div>
+                  <div
+                    className="gantt-right-body-cell"
+                    style={{
+                      height: headBodyPaddingY + "px",
+                    }}
+                  ></div>
+                  {DataMome}
+                  <div
+                    className="gantt-right-body-cell"
+                    style={{
+                      height: headBodyPaddingY + "px",
+                    }}
+                  ></div>
                 </div>
-                <div
-                  className="gantt-right-body-cell"
-                  style={{
-                    height: headBodyPaddingY + "px",
-                  }}
-                ></div>
-                {data.map((item, index) => {
-                  return item.isEmpty ? (
-                    <div
-                      key={index}
-                      className="gantt-right-body-cell gantt-right-body-cell-isEmpty"
-                    ></div>
-                  ) : item.parentIsEmpty ? (
-                    <div
-                      key={index}
-                      className="gantt-right-body-cell gantt-right-body-cell-parentIsEmpty"
-                    ></div>
-                  ) : !item.isParent ? (
-                    <div
-                      key={index}
-                      className="gantt-right-body-cell gantt-right-body-cell-isParent-false"
-                    >
-                      <div
-                        id={"gantt-progressBar-Id" + index}
-                        onMouseEnter={() =>
-                          handleMouseEnter("gantt-progressBar-Id" + index)
-                        }
-                        onMouseLeave={handleMouseLeave}
-                        className={`progressBar progressBar-${item.status}`}
-                        style={{
-                          padding: "5px",
-                          border: "0",
-                          background: "transparent",
-                          left: item.left + "px",
-                        }}
-                      >
-                        <div className="progressBar-box">
-                          <div className="progressBar-render progressBar-render-child">
-                            {item.renderoBar &&
-                              item.renderoBar(
-                                item.width,
-                                item.width * item.progress,
-                                item.width - item.width * item.progress,
-                                item.overtimeWidth
-                              )}
-                          </div>
-                          <div
-                            className="progressBar-default progressBar-default-child"
-                            style={{ width: item.width + "px" }}
-                          >
-                            <div
-                              className="progressBar-active progressBar-active-child"
-                              style={{
-                                width: item.progress * 100 + "%",
-                              }}
-                            ></div>
-                          </div>
-                          {(item.status === "overtime" ||
-                            item.status === "finishOvertime") &&
-                            item.overtimeWidth && (
-                              <div
-                                className="progressBar-overTimeWidth progressBar-overTimeWidth-child"
-                                style={{
-                                  width: item.overtimeWidth + "px",
-                                }}
-                              >
-                                <div className="overtimeRender">
-                                  {item.renderOvertime &&
-                                    item.renderOvertime(item.overtimeWidth)}
-                                </div>
-                              </div>
-                            )}
-                        </div>
-                      </div>
-                      {showLine &&
-                        ganttProgressBarId ===
-                          `gantt-progressBar-Id${index}` && (
-                          <HelpLine
-                            ganttProgressBarId={ganttProgressBarId}
-                            item={{
-                              ...item,
-                              ganttProgressBarId:
-                                "gantt-progressBar-Id" + index,
-                            }}
-                          />
-                        )}
-                    </div>
-                  ) : item.isParent ? (
-                    <div
-                      key={index}
-                      className="gantt-right-body-cell gantt-right-body-cell-isParent-true"
-                    >
-                      <div
-                        id={"gantt-progressBar-Id" + index}
-                        onMouseEnter={() =>
-                          handleMouseEnter("gantt-progressBar-Id" + index)
-                        }
-                        onMouseLeave={handleMouseLeave}
-                        className={`progressBar progressBar-${item.status}`}
-                        style={{
-                          left: item.left + "px",
-                        }}
-                      >
-                        <div className="progressBar-box">
-                          <div className="progressBar-render">
-                            {item.renderoBar &&
-                              item.renderoBar(
-                                item.width,
-                                item.width * item.progress,
-                                item.width - item.width * item.progress,
-                                item.overtimeWidth
-                              )}
-                          </div>
-                          <div
-                            className="progressBar-default"
-                            style={{
-                              width: item.width + "px",
-                            }}
-                          >
-                            <div
-                              className="progressBar-active"
-                              style={{
-                                width: item.progress * 100 + "%",
-                              }}
-                            ></div>
-                          </div>
-                          {(item.status === "overtime" ||
-                            item.status === "finishOvertime") &&
-                            item.overtimeWidth && (
-                              <div
-                                className="progressBar-overTimeWidth"
-                                style={{
-                                  width: item.overtimeWidth + "px",
-                                }}
-                              >
-                                <div className="overtimeRender">
-                                  {item.renderOvertime &&
-                                    item.renderOvertime(item.overtimeWidth)}
-                                </div>
-                              </div>
-                            )}
-                        </div>
-                        <div className="progress-text">
-                          {
-                            statusList.filter(
-                              (e) => item.status === e.status
-                            )[0].text
-                          }
-                        </div>
-                      </div>
-                      {showLine &&
-                        ganttProgressBarId ===
-                          `gantt-progressBar-Id${index}` && (
-                          <HelpLine
-                            ganttProgressBarId={ganttProgressBarId}
-                            item={{
-                              ...item,
-                              ganttProgressBarId:
-                                "gantt-progressBar-Id" + index,
-                            }}
-                          />
-                        )}
-                    </div>
-                  ) : (
-                    <></>
-                  );
-                })}
-                <div
-                  className="gantt-right-body-cell"
-                  style={{
-                    height: headBodyPaddingY + "px",
-                  }}
-                ></div>
               </div>
             </div>
           </div>

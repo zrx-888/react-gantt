@@ -81,6 +81,10 @@ export interface GanttProps {
    */
   head: GanttHeadProps[];
   /**
+   * 高度
+   */
+  height?: string;
+  /**
    * 表头宽度
    */
   headWidth?: string;

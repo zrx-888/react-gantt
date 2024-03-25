@@ -14,8 +14,8 @@ import {
 import dayjs from "dayjs";
 const list: GanttDataProps[] = [
   {
-    startTime: "2024-03-22 00:00:00",
-    endTime: "2024-03-25 00:00:00",
+    startTime: "2024-03-10 00:00:00",
+    endTime: "2024-03-30 00:00:00",
     finishTime: null,
     dept: "技术部",
     num: "2人",
@@ -24,13 +24,14 @@ const list: GanttDataProps[] = [
     time2: "结束时间",
     renderHead: () => <div>略略略</div>,
     renderoBar: (width, activeWidth, surplusWidth, overtimeWidth) => {
-      // console.log(width + "进度条宽度");
+      console.log(width + "进度条宽度");
       // console.log(activeWidth + "选中进度条宽度");
       // console.log(surplusWidth + "剩余进度条宽度");
       // console.log(overtimeWidth + "超出的宽度");
       return <div></div>;
     },
   },
+
   {
     startTime: "2024-03-11 00:00:00",
     endTime: "2024-03-25 12:00:00",
@@ -141,10 +142,10 @@ const list: GanttDataProps[] = [
 
       {
         start: false,
-        startTime: dayjs(1711188728000).format("YYYY-MM-DD HH:mm:ss"),
-        endTime: dayjs(1711036800000).format("YYYY-MM-DD HH:mm:ss"),
+        startTime: "2024-04-13 09:00:00",
+        endTime: "2024-04-15 17:00:00",
         finishTime: null,
-        dept: "前端",
+        dept: "前端手收尸",
         num: "2人",
         time: "2天",
         time2: "结束时间",
@@ -173,9 +174,7 @@ const head: GanttHeadProps[] = [
 function App() {
   const ganttRef = useRef<GanttPropsRefProps>(null);
   return (
-    <div
-      
-    >
+    <div>
       <Gantt data={list} head={head} ref={ganttRef} />
       <button
         onClick={() => {

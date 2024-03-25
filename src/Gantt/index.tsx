@@ -6,19 +6,34 @@ import { GanttProps, GanttPropsRefProps } from "./types";
 
 const Gantt = forwardRef(
   (
-    { data, head, showLine = true, headWidth = "400px", headBodyPaddingY = 10, headBodyPaddingX = 0, open = true }: GanttProps,
+    {
+      data,
+      head,
+      showLine = true,
+      headWidth = "400px",
+      height = "auto",
+      headBodyPaddingY = 10,
+      headBodyPaddingX = 0,
+      open = true,
+    }: GanttProps,
     ref: React.ForwardedRef<GanttPropsRefProps>
   ) => {
     const [openStatus, setOpenStatus] = useState(open);
     const [isInit, setInit] = useState(false);
+    const [scrollBarHeight, setScrollBarHeight] = useState(0);
     useImperativeHandle(ref, () => ({
-      initGantt
+      initGantt,
     }));
     const initGantt = () => {
       setInit(!isInit);
     };
     return (
-      <div className="gantt">
+      <div
+        className="gantt"
+        style={{
+          height: height,
+        }}
+      >
         <GanttOverview
           head={head}
           list={data}
@@ -26,12 +41,19 @@ const Gantt = forwardRef(
           headBodyPaddingY={headBodyPaddingY}
           headBodyPaddingX={headBodyPaddingX}
           headWidth={headWidth}
-          onChange={e => {
+          scrollBarHeight={scrollBarHeight}
+          onChange={(e) => {
             setOpenStatus(e);
           }}
         />
-
-        <GanttTime showLine={showLine} isInit={isInit} openStatus={openStatus} list={data} headBodyPaddingY={headBodyPaddingY} />
+        <GanttTime
+          showLine={showLine}
+          isInit={isInit}
+          openStatus={openStatus}
+          list={data}
+          headBodyPaddingY={headBodyPaddingY}
+          onChangeScrollBarHeight={setScrollBarHeight}
+        />
       </div>
     );
   }

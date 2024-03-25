@@ -45,6 +45,7 @@
   padding: 0 10px;
   overflow: hidden;
   background-color: #ffffff;
+  border-bottom: 1px solid var(--borderColor);
 }
 
 .ganttOverview-head .ganttOverview-head-item {
@@ -54,22 +55,23 @@
   text-align: center;
 }
 
-.ganttOverview-body-height{
+.ganttOverview-body-height {
   height: 100%;
-  overflow-y: auto;
+  box-sizing: border-box;
+  overflow-y: hidden;
 }
 
-.ganttOverview-body-height::-webkit-scrollbar{
+.ganttOverview-body-height::-webkit-scrollbar {
   display: none;
   width: 0;
 }
 
 .ganttOverview-body {
   flex: 1;
-  padding: 10px 0;
   overflow: hidden;
   background: #f6f7f9;
-  border-top: 1px solid var(--borderColor);
+  display: flex;
+  flex-direction: column;
 }
 
 .ganttOverview-body-cell {
