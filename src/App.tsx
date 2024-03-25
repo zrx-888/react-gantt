@@ -11,7 +11,6 @@ import {
   GanttHeadProps,
   GanttPropsRefProps,
 } from "./Gantt/types";
-import dayjs from "dayjs";
 const list: GanttDataProps[] = [
   {
     startTime: "2024-03-10 00:00:00",
@@ -25,9 +24,9 @@ const list: GanttDataProps[] = [
     renderHead: () => <div>略略略</div>,
     renderoBar: (width, activeWidth, surplusWidth, overtimeWidth) => {
       console.log(width + "进度条宽度");
-      // console.log(activeWidth + "选中进度条宽度");
-      // console.log(surplusWidth + "剩余进度条宽度");
-      // console.log(overtimeWidth + "超出的宽度");
+      console.log(activeWidth + "选中进度条宽度");
+      console.log(surplusWidth + "剩余进度条宽度");
+      console.log(overtimeWidth + "超出的宽度");
       return <div></div>;
     },
   },
