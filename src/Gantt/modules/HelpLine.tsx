@@ -21,7 +21,7 @@ const HelpLine: React.FC<{
       item.left + 5
     }px;">
       <div class="top-time-width-item-child" style="width:${
-        item.width
+        item.width + 1
       }px; background:var(--${
       item.status === "overtime" ? "progress" : item.status
     }Color)">
