@@ -20,12 +20,6 @@ export interface GanttDataProps {
   children?: GanttDataProps[];
   /**
    *
-   * @param width 超时宽度
-   * @returns 超时自定义渲染内容
-   */
-  renderOvertime?: (width: number) => JSX.Element;
-  /**
-   *
    * @param width 进度条宽度（不包含超出的宽度）
    * @param activeWidth 选中进度条宽度
    * @param surplusWidth 剩余进度条宽度

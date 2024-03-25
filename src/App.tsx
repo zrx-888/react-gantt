@@ -102,13 +102,10 @@ const list: GanttDataProps[] = [
         start: true,
         startTime: "2024-03-12 00:00:00",
         endTime: "2024-03-19 12:00:00",
-        finishTime: "2024-03-15 12:00:00",
+        finishTime: "2024-03-25 12:00:00",
         renderHeadChild: () => <div>自定义render</div>,
         renderoBar: () => {
           return <div> 任务标题</div>;
-        },
-        renderOvertime: () => {
-          return <div className="h-[18px]"> </div>;
         },
         dept: "前端",
         num: "2人",
@@ -174,7 +171,7 @@ function App() {
   const ganttRef = useRef<GanttPropsRefProps>(null);
   return (
     <div>
-      <Gantt data={list} head={head} ref={ganttRef} />
+      <Gantt height="400px" data={list} head={head} ref={ganttRef} />
       <button
         onClick={() => {
           ganttRef.current?.initGantt();

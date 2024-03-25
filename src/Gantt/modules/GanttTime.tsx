@@ -377,10 +377,7 @@ const GanttTime: React.FC<{
                           width: item.overtimeWidth + "px",
                         }}
                       >
-                        <div className="overtimeRender">
-                          {item.renderOvertime &&
-                            item.renderOvertime(item.overtimeWidth)}
-                        </div>
+                        <div className="overtimeRender"></div>
                       </div>
                     )}
                 </div>
@@ -444,10 +441,7 @@ const GanttTime: React.FC<{
                           width: item.overtimeWidth + "px",
                         }}
                       >
-                        <div className="overtimeRender">
-                          {item.renderOvertime &&
-                            item.renderOvertime(item.overtimeWidth)}
-                        </div>
+                        <div className="overtimeRender"></div>
                       </div>
                     )}
                 </div>
