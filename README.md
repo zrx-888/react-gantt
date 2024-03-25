@@ -15,6 +15,8 @@ npm i react-gantt-lightweight
 
 [https://react-gantt.vercel.app/](https://react-gantt.vercel.app/)
 
+![](public/gantt.png)
+
 ```js
 import { useRef } from "react";
 import {
@@ -343,6 +345,8 @@ export default App;
     </tbody>
   </tr>
 </table>
+
+### GanttHeadProps
 
 <table class="table table-bordered table-striped">
   <tr>
