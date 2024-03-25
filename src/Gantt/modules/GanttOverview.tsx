@@ -101,7 +101,7 @@ const GanttOverview: React.FC<{
                               <div
                                 key={n}
                                 style={{
-                                  textAlign: item.align ? item.align : "center",
+                                  textAlign: i.align ? i.align : "center",
                                   width: i.width ? i.width : "auto",
                                   maxWidth: i.width ? i.width : "auto",
                                   minWidth: i.width ? i.width : "auto",

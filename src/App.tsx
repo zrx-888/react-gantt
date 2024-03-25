@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 // import {
 //   Gantt,
 //   GanttDataProps,
@@ -19,15 +19,24 @@ const list: GanttDataProps[] = [
     dept: "技术部",
     num: "2人",
     time: "2天",
-    start: false,
+    start: true,
     time2: "结束时间",
-    renderHead: () => <div>略略略</div>,
-    renderoBar: (width, activeWidth, surplusWidth, overtimeWidth) => {
-      console.log(width + "进度条宽度");
-      console.log(activeWidth + "选中进度条宽度");
-      console.log(surplusWidth + "剩余进度条宽度");
-      console.log(overtimeWidth + "超出的宽度");
-      return <div></div>;
+    renderHead: () => <div>自定义渲染噢噢噢噢</div>,
+    renderoBar: (_, activeWidth, surplusWidth) => {
+      return (
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
+          <div style={{ width: activeWidth + "px" }}>
+            我的宽度是：{activeWidth}px
+          </div>
+          <div style={{ width: surplusWidth + "px" }}>
+            我的宽度是：{surplusWidth.toFixed(2)}px
+          </div>
+        </div>
+      );
     },
   },
 
@@ -40,7 +49,22 @@ const list: GanttDataProps[] = [
     time: "2天",
     start: true,
     time2: "结束时间",
-
+    renderoBar: (_, activeWidth) => {
+      return (
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
+          <div
+            style={{ width: activeWidth + "px" }}
+            onClick={() => alert(`我的宽度是：${activeWidth}px`)}
+          >
+            点我弹窗
+          </div>
+        </div>
+      );
+    },
     children: [
       {
         start: false,
@@ -63,6 +87,26 @@ const list: GanttDataProps[] = [
     time: "2天",
     start: true,
     time2: "结束时间",
+    renderoBar: (_, activeWidth, surplusWidth) => {
+      return (
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              width: activeWidth + "px",
+            }}
+          >
+            自定义内容哦
+          </div>
+          <div
+            style={{
+              width: surplusWidth + "px",
+            }}
+          >
+            我是剩余宽度哦
+          </div>
+        </div>
+      );
+    },
   },
   {
     startTime: "2024-03-07 00:00:00",
@@ -76,24 +120,36 @@ const list: GanttDataProps[] = [
   },
   {
     startTime: "2024-03-11 00:00:00",
-    endTime: "2024-03-25 12:00:00",
+    endTime: "2024-03-20 12:00:00",
     finishTime: "2024-03-27 00:00:00",
     dept: "技术部",
     num: "2人",
     time: "2天",
     start: true,
     time2: "结束时间",
-    renderoBar: (width) => {
+    renderoBar: (width, _, __, overtimeWidth) => {
       return (
-        <div
-          style={{
-            fontSize: "12px",
-            color: "#fff",
-            paddingLeft: "10px",
-            width: width + "px",
-          }}
-        >
-          自定义任务内容-哈哈哈哈哈
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              fontSize: "12px",
+              color: "#fff",
+              paddingLeft: "10px",
+              width: width + "px",
+            }}
+          >
+            自定义任务内容-哈哈哈哈哈
+          </div>
+          <div
+            style={{
+              fontSize: "12px",
+              color: "#fff",
+              paddingLeft: "10px",
+              width: overtimeWidth + "px",
+            }}
+          >
+            自定义超出内容
+          </div>
         </div>
       );
     },
@@ -154,6 +210,7 @@ const head: GanttHeadProps[] = [
   {
     title: "部门",
     key: "dept",
+    align: "left",
   },
   {
     title: "人数",
@@ -169,16 +226,34 @@ const head: GanttHeadProps[] = [
 
 function App() {
   const ganttRef = useRef<GanttPropsRefProps>(null);
+  const [show, setShow] = useState(true);
   return (
     <div>
-      <Gantt height="400px" data={list} head={head} ref={ganttRef} />
-      <button
-        onClick={() => {
-          ganttRef.current?.initGantt();
-        }}
-      >
-        刷新
-      </button>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <button onClick={() => setShow(!show)}>
+          {show ? "默认" : "滚动条"}
+        </button>
+      </div>
+      {show ? (
+        <>
+          <div>
+            <h1>默认</h1>
+            <button
+              onClick={() => {
+                ganttRef.current?.initGantt();
+              }}
+            >
+              刷新
+            </button>
+          </div>
+          <Gantt data={list} head={head} ref={ganttRef} />
+        </>
+      ) : (
+        <>
+          <h1>带滚动条</h1>
+          <Gantt height="400px" data={list} head={head} />
+        </>
+      )}
     </div>
   );
 }

@@ -6,11 +6,33 @@
   --finishColor: #00b042;
   --waitColor: #e0e2e4;
   --overtimeColor: #f54040;
+  --finishOvertimeColor: #00b042;
 
   display: flex;
   overflow: hidden;
   border: 1px solid var(--borderColor);
   border-radius: 8px;
+}
+
+.timeLine-finish {
+  background: var(--finishColor);
+}
+.timeLine-wait {
+  background: var(--waitColor);
+}
+.timeLine-overtime {
+  background: var(--progressColor);
+}
+.timeLine-progress {
+  background: var(--progressColor);
+}
+.timeLine-finishOvertime {
+  background: var(--finishColor);
+}
+
+.timeLine-finishOvertime2,
+.timeLine-overtime2 {
+  background: var(--overtimeColor);
 }
 
 .gantt-right {
@@ -32,6 +54,7 @@
   height: 60px;
   overflow: hidden;
   flex: 1;
+  position: relative;
 }
 
 .gantt-right-body-content {
@@ -384,4 +407,18 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+#top-time-width {
+  display: flex;
+}
+#top-time-width .top-time-width-item .top-time-width-item-child {
+  height: 100%;
+}
+#top-time-width .top-time-width-item {
+  opacity: 0.3;
+  display: flex;
+  position: absolute;
+  height: 30px;
+  bottom: 0;
 }

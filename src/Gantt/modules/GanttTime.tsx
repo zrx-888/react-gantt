@@ -479,6 +479,7 @@ const GanttTime: React.FC<{
           >
             <div className="gantt-right-body-head-box ">
               <div className="gantt-right-body-head">
+                <div id="top-time-width"></div>
                 <div className="gantt-right-body-head-list gantt-right-body-head-year">
                   {yaerList.map((item, index) => {
                     return (

@@ -13,6 +13,28 @@ const HelpLine: React.FC<{
   });
   useEffect(() => {
     const elements = document.getElementsByClassName("progressBar");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    document.getElementById(
+      "top-time-width"
+    ).innerHTML = `<div class="top-time-width-item" style="left:${
+      item.left + 5
+    }px;">
+      <div class="top-time-width-item-child" style="width:${
+        item.width
+      }px; background:var(--${
+      item.status === "overtime" ? "progress" : item.status
+    }Color)">
+    </div>
+    ${
+      (item.status === "finishOvertime" || item.status === "overtime") &&
+      item.overtimeWidth
+        ? `<div style="width:${
+            item.overtimeWidth + 1
+          }px; background:var(--overtimeColor)"></div>`
+        : ""
+    } 
+    </div>`;
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i];
       if (element.id != ganttProgressBarId) {
@@ -25,6 +47,9 @@ const HelpLine: React.FC<{
         const element = elements[i];
         element.classList.remove("gantt-animation");
       }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      document.getElementById("top-time-width").innerHTML = "";
     };
   }, [ganttProgressBarId]);
   useEffect(() => {
@@ -32,11 +57,60 @@ const HelpLine: React.FC<{
     const ganttProgressBarDom = document.getElementById(
       item.ganttProgressBarId
     );
+    // if (
+    //   (item.status === "finishOvertime" || item.status === "overtime") &&
+    //   item.overtimeWidth
+    // ) {
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   document.getElementById("top-time-overtime").setAttribute(
+    //     "style",
+    //     `
+    //     display: block;
+    //   position: absolute;
+    //   bottom: 0;
+    //   height: 30px;
+    //   opacity: 0.3;
+    //   left: ${item.width + item.left + 5}px;
+    //   width:${item.overtimeWidth + 1}px;
+    //   background:var(--overtimeColor)
+    //   `
+    //   );
+    //   document.getElementById("top-time-width").setAttribute(
+    //     "style",
+    //     `
+    //     display: none;
+    //   `
+    //   );
+    // } else {
+    //   document.getElementById("top-time-overtime").setAttribute(
+    //     "style",
+    //     `
+    //     display: none;
+    //   `
+    //   );
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   document.getElementById("top-time-width").setAttribute(
+    //     "style",
+    //     `
+    //     display: block;
+    //     position: absolute;
+    //   bottom: 0;
+    //   height: 30px;
+    //   opacity: 0.3;
+    //   left:${item.left + 5}px;
+    //   width:${item.width}px;
+    //   background:var(--${
+    //     item.status === "overtime" ? "progress" : item.status
+    //   }Color)
+    //   `
+    //   );
+    // }
     if (rightBodyDom && ganttProgressBarDom) {
       const top =
         rightBodyDom.getBoundingClientRect().top -
         ganttProgressBarDom.getBoundingClientRect().top;
-
       setRect({
         ...rect,
         top: top - 1,
