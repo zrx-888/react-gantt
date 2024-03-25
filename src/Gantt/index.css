@@ -16,7 +16,6 @@
 .gantt-right {
   flex: 1;
   border-left: 1px solid var(--borderColor);
-  height: 100%;
   overflow: hidden;
 }
 

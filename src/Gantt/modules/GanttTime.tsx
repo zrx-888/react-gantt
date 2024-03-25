@@ -51,6 +51,7 @@ const GanttTime: React.FC<{
   onChangeScrollBarHeight,
 }) => {
   const [yaerList, setYaerList] = useState<YearListIF[]>([]);
+
   const [days, setDays] = useState<string[]>([]);
   const [data, setData] = useState<IListIF[]>([]);
   const [newList, setNewList] = useState<IListIF[]>([]);
