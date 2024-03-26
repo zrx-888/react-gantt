@@ -228,6 +228,15 @@ export default App;
       <th>左侧表头</th>
     </tr>
     <tr>
+      <th>ganttType</th>
+      <th> "day" | "month"</th>
+      <th>day</th>
+      <th>
+        <div>day日期</div>
+        <div>month月份</div>
+      </th>
+    </tr>
+    <tr>
       <th>height</th>
       <th>string</th>
       <th>auto</th>
@@ -262,6 +271,12 @@ export default App;
       <th>boolean</th>
       <th>true</th>
       <th>是否显示左侧收起按钮</th>
+    </tr>
+    <tr>
+      <th>ref</th>
+      <th>GanttPropsRefProps</th>
+      <th>null</th>
+      <th>ref</th>
     </tr>
   </tbody>
 </table>
@@ -388,6 +403,35 @@ export default App;
         <td>() => JSX.Element</td>
         <td>() => JSX.Element</td>
         <td>自定义内容</td>
+      </tr>
+    </tbody>
+  </tr>
+</table>
+
+### GanttPropsRefProps
+
+<table class="table table-bordered table-striped">
+  <tr>
+    <thead>
+      <tr>
+        <th>参数</th>
+        <th>类型</th>
+        <th>默认值</th>
+        <th>描述</th>
+      </tr>
+    </thead>
+    <tbody>
+       <tr>
+        <td>initGantt</td>
+        <td>()=>{}</td>
+        <td>()=>{}</td>
+        <td>初始化甘特图</td>
+      </tr>
+       <tr>
+        <td>setGanttType</td>
+        <td>(type:"day" | "month")=>void</td>
+        <td>(type:"day" | "month")=>void</td>
+        <td>切换显示类型</td>
       </tr>
     </tbody>
   </tr>
