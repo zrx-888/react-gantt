@@ -13,16 +13,25 @@ import {
 } from "./Gantt/types";
 const list: GanttDataProps[] = [
   {
-    startTime: "2024-03-10 00:00:00",
-    endTime: "2024-03-30 00:00:00",
+    startTime: "2023-12-11 00:00:00",
+    endTime: "2024-01-16 00:00:00",
+    finishTime: null,
+    dept: "技术部",
+    num: "2人",
+    time: "2天",
+    start: false,
+    time2: "结束时间",
+  },
+  {
+    startTime: "2023-12-10 00:00:00",
+    endTime: "2024-3-1 00:00:00",
     finishTime: null,
     dept: "技术部",
     num: "2人",
     time: "2天",
     start: true,
     time2: "结束时间",
-    renderHead: () => <div>自定义渲染噢噢噢噢</div>,
-    renderoBar: (_, activeWidth, surplusWidth) => {
+    renderoBar: (_, activeWidth, __, overflowWidth) => {
       return (
         <div
           style={{
@@ -32,18 +41,17 @@ const list: GanttDataProps[] = [
           <div style={{ width: activeWidth + "px" }}>
             我的宽度是：{activeWidth}px
           </div>
-          <div style={{ width: surplusWidth + "px" }}>
-            我的宽度是：{surplusWidth.toFixed(2)}px
+          <div style={{ width: overflowWidth + "px" }}>
+            我的宽度是：{overflowWidth.toFixed(2)}px
           </div>
         </div>
       );
     },
   },
-
   {
-    startTime: "2024-03-11 00:00:00",
-    endTime: "2024-03-25 12:00:00",
-    finishTime: null,
+    startTime: "2024-01-01 00:00:00",
+    endTime: "2024-04-01 00:00:00",
+    finishTime: "2024-03-22 00:00:00",
     dept: "技术部",
     num: "2人",
     time: "2天",
@@ -69,7 +77,7 @@ const list: GanttDataProps[] = [
       {
         start: false,
         startTime: "2024-03-22 00:00:00",
-        endTime: "2024-04-20 12:00:00",
+        endTime: "2024-04-29 12:00:00",
         finishTime: null,
         dept: "前端",
         num: "2人",
@@ -81,32 +89,12 @@ const list: GanttDataProps[] = [
   {
     startTime: "2024-03-11 00:00:00",
     endTime: "2024-03-25 12:00:00",
-    finishTime: "2024-03-22 00:00:00",
+    finishTime: "2024-03-22 12:00:00",
     dept: "技术部",
     num: "2人",
     time: "2天",
     start: true,
     time2: "结束时间",
-    renderoBar: (_, activeWidth, surplusWidth) => {
-      return (
-        <div style={{ display: "flex" }}>
-          <div
-            style={{
-              width: activeWidth + "px",
-            }}
-          >
-            自定义内容哦
-          </div>
-          <div
-            style={{
-              width: surplusWidth + "px",
-            }}
-          >
-            我是剩余宽度哦
-          </div>
-        </div>
-      );
-    },
   },
   {
     startTime: "2024-03-07 00:00:00",
@@ -226,34 +214,32 @@ const head: GanttHeadProps[] = [
 
 function App() {
   const ganttRef = useRef<GanttPropsRefProps>(null);
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <button onClick={() => setShow(!show)}>
-          {show ? "默认" : "滚动条"}
+        <button
+          onClick={() => {
+            ganttRef.current?.setGanttType(show ? "day" : "month");
+            setShow(!show);
+          }}
+        >
+          切换显示
         </button>
       </div>
-      {show ? (
-        <>
-          <div>
-            <h1>默认</h1>
-            <button
-              onClick={() => {
-                ganttRef.current?.initGantt();
-              }}
-            >
-              刷新
-            </button>
-          </div>
-          <Gantt data={list} head={head} ref={ganttRef} />
-        </>
-      ) : (
-        <>
-          <h1>带滚动条</h1>
-          <Gantt height="400px" data={list} head={head} />
-        </>
-      )}
+      <>
+        <div>
+          <h1>显示类型：{!show ? "day" : "month"}</h1>
+          <button
+            onClick={() => {
+              ganttRef.current?.initGantt();
+            }}
+          >
+            刷新
+          </button>
+        </div>
+        <Gantt data={list} head={head} ref={ganttRef} />
+      </>
     </div>
   );
 }

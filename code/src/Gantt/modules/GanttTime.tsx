@@ -87,7 +87,6 @@ const GanttTime: React.FC<{
           : 0;
       } else if (e.status === "wait") {
         progressHours = endHours;
-        console.log(e.startTime, e.endTime);
       } else {
         if (new Date(e.startTime).getTime() > new Date().getTime()) {
           progressHours = 0;
@@ -127,8 +126,6 @@ const GanttTime: React.FC<{
     const year = getYearMonth(maximumDate.startDate, maximumDate.endDate);
     setYaerList(year);
     const day = getDaysList(maximumDate.startDate, maximumDate.endDate);
-    console.log(year);
-
     const headWidth = document.getElementById("gantt-right")?.offsetWidth;
     if (headWidth) {
       setHeadWidth(headWidth);

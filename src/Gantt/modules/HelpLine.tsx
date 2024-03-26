@@ -21,7 +21,7 @@ const HelpLine: React.FC<{
       item.left + 5
     }px;">
       <div class="top-time-width-item-child" style="width:${
-        item.width + 1
+        item.width
       }px; background:var(--${
       item.status === "overtime" ? "progress" : item.status
     }Color)">
@@ -29,9 +29,7 @@ const HelpLine: React.FC<{
     ${
       (item.status === "finishOvertime" || item.status === "overtime") &&
       item.overtimeWidth
-        ? `<div style="width:${
-            item.overtimeWidth + 1
-          }px; background:var(--overtimeColor)"></div>`
+        ? `<div style="width:${item.overtimeWidth}px; background:var(--overtimeColor)"></div>`
         : ""
     } 
     </div>`;
@@ -57,56 +55,6 @@ const HelpLine: React.FC<{
     const ganttProgressBarDom = document.getElementById(
       item.ganttProgressBarId
     );
-    // if (
-    //   (item.status === "finishOvertime" || item.status === "overtime") &&
-    //   item.overtimeWidth
-    // ) {
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   document.getElementById("top-time-overtime").setAttribute(
-    //     "style",
-    //     `
-    //     display: block;
-    //   position: absolute;
-    //   bottom: 0;
-    //   height: 30px;
-    //   opacity: 0.3;
-    //   left: ${item.width + item.left + 5}px;
-    //   width:${item.overtimeWidth + 1}px;
-    //   background:var(--overtimeColor)
-    //   `
-    //   );
-    //   document.getElementById("top-time-width").setAttribute(
-    //     "style",
-    //     `
-    //     display: none;
-    //   `
-    //   );
-    // } else {
-    //   document.getElementById("top-time-overtime").setAttribute(
-    //     "style",
-    //     `
-    //     display: none;
-    //   `
-    //   );
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   document.getElementById("top-time-width").setAttribute(
-    //     "style",
-    //     `
-    //     display: block;
-    //     position: absolute;
-    //   bottom: 0;
-    //   height: 30px;
-    //   opacity: 0.3;
-    //   left:${item.left + 5}px;
-    //   width:${item.width}px;
-    //   background:var(--${
-    //     item.status === "overtime" ? "progress" : item.status
-    //   }Color)
-    //   `
-    //   );
-    // }
     if (rightBodyDom && ganttProgressBarDom) {
       const top =
         rightBodyDom.getBoundingClientRect().top -

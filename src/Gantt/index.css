@@ -90,6 +90,8 @@
   height: 100%;
   font-size: 14px;
   box-sizing: border-box;
+  border-left: 1px solid rgba(126 134 142 / 16%);
+  box-sizing: border-box;
 }
 
 .gantt-right-body-item {

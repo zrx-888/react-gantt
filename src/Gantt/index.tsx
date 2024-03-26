@@ -2,7 +2,7 @@ import GanttOverview from "./modules/GanttOverview";
 import "./index.css";
 import GanttTime from "./modules/GanttTime";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
-import { GanttProps, GanttPropsRefProps } from "./types";
+import { GanttProps, GanttPropsRefProps, GanttType } from "./types";
 
 const Gantt = forwardRef(
   (
@@ -12,6 +12,7 @@ const Gantt = forwardRef(
       showLine = true,
       headWidth = "400px",
       height = "auto",
+      ganttType = "day",
       headBodyPaddingY = 10,
       headBodyPaddingX = 0,
       open = true,
@@ -20,12 +21,17 @@ const Gantt = forwardRef(
   ) => {
     const [openStatus, setOpenStatus] = useState(open);
     const [isInit, setInit] = useState(false);
+    const [myGanttType, setMyGanttType] = useState(ganttType);
     const [scrollBarHeight, setScrollBarHeight] = useState(0);
     useImperativeHandle(ref, () => ({
       initGantt,
+      setGanttType,
     }));
     const initGantt = () => {
       setInit(!isInit);
+    };
+    const setGanttType = (type: GanttType) => {
+      setMyGanttType(type);
     };
     return (
       <div
@@ -49,6 +55,7 @@ const Gantt = forwardRef(
         <GanttTime
           showLine={showLine}
           isInit={isInit}
+          ganttType={myGanttType}
           openStatus={openStatus}
           list={data}
           headBodyPaddingY={headBodyPaddingY}
