@@ -42,7 +42,7 @@ const list: GanttDataProps[] = [
             我的宽度是：{activeWidth}px
           </div>
           <div style={{ width: overflowWidth + "px" }}>
-            我的宽度是：{overflowWidth.toFixed(2)}px
+            我的宽度是：{overflowWidth && overflowWidth.toFixed(2)}px
           </div>
         </div>
       );
