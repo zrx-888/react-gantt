@@ -1,11 +1,13 @@
 .ganttOverview {
   position: relative;
   transition: all 0.15s linear;
+  height: 100%;
   overflow: hidden;
 }
 
 .ganttOverview-box {
   position: relative;
+  height: 100%;
 }
 
 .ganttOverview-box .ganttOverview-arrrow {
@@ -37,26 +39,39 @@
 }
 
 .ganttOverview-head {
+  height: 60px;
   display: flex;
+  line-height: 60px;
   padding: 0 10px;
   overflow: hidden;
   background-color: #ffffff;
+  border-bottom: 1px solid var(--borderColor);
 }
 
 .ganttOverview-head .ganttOverview-head-item {
   flex: 1;
-  height: 60px;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 60px;
+  font-size: 15px;
   text-align: center;
 }
 
+.ganttOverview-body-height {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: hidden;
+}
+
+.ganttOverview-body-height::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+
 .ganttOverview-body {
-  padding: 10px 0;
+  flex: 1;
   overflow: hidden;
   background: #f6f7f9;
-  border-top: 1px solid var(--borderColor);
+  display: flex;
+  flex-direction: column;
 }
 
 .ganttOverview-body-cell {
@@ -116,7 +131,7 @@
 .ganttOverview-body-cell-item {
   flex: 1;
   height: 40px;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 40px;
   text-align: center;
 }

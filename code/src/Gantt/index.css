@@ -6,6 +6,7 @@
   --finishColor: #00b042;
   --waitColor: #e0e2e4;
   --overtimeColor: #f54040;
+  --finishOvertimeColor: #00b042;
 
   display: flex;
   overflow: hidden;
@@ -13,15 +14,68 @@
   border-radius: 8px;
 }
 
+.timeLine-finish {
+  background: var(--finishColor);
+}
+.timeLine-wait {
+  background: var(--waitColor);
+}
+.timeLine-overtime {
+  background: var(--progressColor);
+}
+.timeLine-progress {
+  background: var(--progressColor);
+}
+.timeLine-finishOvertime {
+  background: var(--finishColor);
+}
+
+.timeLine-finishOvertime2,
+.timeLine-overtime2 {
+  background: var(--overtimeColor);
+}
+
 .gantt-right {
   flex: 1;
   border-left: 1px solid var(--borderColor);
+  overflow: hidden;
+}
+
+.gantt-right-body {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .gantt-right-body-head {
   display: flex;
   flex-direction: column;
   height: 60px;
+  overflow: hidden;
+  flex: 1;
+  position: relative;
+}
+
+.gantt-right-body-content {
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+}
+
+.gantt-right-head-scrollBarWidth {
+  border-left: 1px solid var(--borderColor);
+}
+
+.gantt-right-body-head::-webkit-scrollbar {
+  display: none;
+}
+.gantt-right-body-body {
+  height: 100%;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .gantt-right-body-head .gantt-right-body-head-list {
@@ -36,10 +90,8 @@
   height: 100%;
   font-size: 14px;
   box-sizing: border-box;
-}
-
-.gantt-right-body {
-  overflow-x: auto;
+  border-left: 1px solid rgba(126 134 142 / 16%);
+  box-sizing: border-box;
 }
 
 .gantt-right-body-item {
@@ -202,11 +254,7 @@
   border-bottom-right-radius: 4px;
 }
 
-.gantt-right-body-head-content {
-  position: relative;
-}
-
-.gantt-right-body-head-content-mark {
+.gantt-right-body-content-mark {
   position: absolute;
   top: 0;
   left: 0;
@@ -214,13 +262,17 @@
   height: 100%;
 }
 
-.gantt-right-body-head-content-mark-item {
+.gantt-right-body-head-box {
+  display: flex;
+  border-bottom: 1px solid var(--borderColor);
+}
+
+.gantt-right-body-content-mark-item {
   border-left: 1px solid var(--borderColor);
-  border-top: 1px solid var(--borderColor);
   box-sizing: border-box;
 }
 
-.gantt-right-body-head-content-mark-item:first-child {
+.gantt-right-body-content-mark-item:first-child {
   border-left: 0;
 }
 
@@ -357,4 +409,18 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+#top-time-width {
+  display: flex;
+}
+#top-time-width .top-time-width-item .top-time-width-item-child {
+  height: 100%;
+}
+#top-time-width .top-time-width-item {
+  opacity: 0.3;
+  display: flex;
+  position: absolute;
+  height: 30px;
+  bottom: 0;
 }

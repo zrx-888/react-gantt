@@ -5,12 +5,15 @@ export type GanttDataStatusProps =
   | "overtime"
   | "finishOvertime";
 
+export type GanttType = "day" | "month";
+
 export interface GanttStatusListProps {
   status: GanttDataStatusProps;
   text: string;
 }
 export interface GanttPropsRefProps {
   initGantt: () => void;
+  setGanttType: (type: GanttType) => void;
 }
 export interface GanttDataProps {
   finishTime: string | null;
@@ -75,6 +78,15 @@ export interface GanttProps {
    */
   head: GanttHeadProps[];
   /**
+   * 表头
+   */
+  ganttType?: GanttType;
+
+  /**
+   * 高度
+   */
+  height?: string;
+  /**
    * 表头宽度
    */
   headWidth?: string;
@@ -98,6 +110,6 @@ export interface GanttProps {
 }
 
 export interface YearListIF {
-  yaer: string;
+  year: string;
   length: number;
 }
