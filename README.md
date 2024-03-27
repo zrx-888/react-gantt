@@ -1,7 +1,7 @@
 # react-gantt-lightweight
 
 react 轻量级甘特图
-目前只能精确到日 后期年,月 会加上
+目前只能精确到日,月 后期年会加上
 
 ## Install
 
