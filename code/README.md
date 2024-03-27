@@ -267,7 +267,7 @@ export default App;
       <th>左侧表格body区域X轴内边距</th>
     </tr>
     <tr>
-      <th>headBodyPaddingX</th>
+      <th>open</th>
       <th>boolean</th>
       <th>true</th>
       <th>是否显示左侧收起按钮</th>
