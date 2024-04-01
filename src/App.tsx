@@ -13,7 +13,7 @@ import {
 } from "./Gantt/types";
 const list: GanttDataProps[] = [
   {
-    startTime: "2023-12-11 00:00:00",
+    startTime: "2023-12-11 010:00:00",
     endTime: "2024-01-16 00:00:00",
     finishTime: null,
     dept: "技术部",
@@ -238,7 +238,10 @@ function App() {
             刷新
           </button>
         </div>
-        <Gantt data={list} head={head} ref={ganttRef} />
+        <Gantt data={list} head={head} ref={ganttRef} onClickText={(e)=>{
+          console.log(e);
+          
+        } } />
       </>
     </div>
   );

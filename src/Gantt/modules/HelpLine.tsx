@@ -15,23 +15,17 @@ const HelpLine: React.FC<{
     const elements = document.getElementsByClassName("progressBar");
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    document.getElementById(
-      "top-time-width"
-    ).innerHTML = `<div class="top-time-width-item" style="left:${
-      item.left + 5
-    }px;">
-      <div class="top-time-width-item-child" style="width:${
-        item.width
-      }px; background:var(--${
-      item.status === "overtime" ? "progress" : item.status
-    }Color)">
-    </div>
-    ${
-      (item.status === "finishOvertime" || item.status === "overtime") &&
-      item.overtimeWidth
-        ? `<div style="width:${item.overtimeWidth}px; background:var(--overtimeColor)"></div>`
-        : ""
-    } 
+    document.getElementById("top-time-width").innerHTML = `
+    <div class="top-time-width-item" style="left:${item.left + 5}px;">
+      <div class="top-time-width-item-child" style="width:${item.width+1}px; background:var(--${item.status === "overtime" ? "progress" : item.status}Color)"></div>
+      ${
+        (item.status === "finishOvertime" || item.status === "overtime") &&
+        item.overtimeWidth
+          ? `<div style="width:${
+              item.overtimeWidth 
+            }px; background:var(--overtimeColor)"></div>`
+          : ""
+      } 
     </div>`;
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i];
@@ -66,33 +60,6 @@ const HelpLine: React.FC<{
       });
     }
   }, [item]);
-  // useEffect(() => {
-  //   const ganttProgressBarDom = document.getElementById(
-  //     item.ganttProgressBarId
-  //   );
-  //   const elements = document.getElementsByClassName("progressBar");
-  //   const parentHeight =
-  //     document.getElementById("gantt-right-body")?.clientHeight;
-
-  //   if (ganttProgressBarDom && parentHeight) {
-  //     const { left, top, bottom } = ganttProgressBarDom.getBoundingClientRect();
-  //     console.log(left);
-
-  //     setRect({ ...rect, left, top, bottom, height: parentHeight });
-  //     for (let i = 0; i < elements.length; i++) {
-  //       const element = elements[i];
-  //       if (element.id != ganttProgressBarDom.id) {
-  //         element.classList.add("gantt-animation");
-  //       }
-  //     }
-  //   }
-  //   return () => {
-  //     for (let i = 0; i < elements.length; i++) {
-  //       const element = elements[i];
-  //       element.classList.remove("gantt-animation");
-  //     }
-  //   };
-  // }, [item]);
   return (
     <>
       {/* 开始时间 */}

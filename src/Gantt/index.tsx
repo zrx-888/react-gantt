@@ -16,6 +16,7 @@ const Gantt = forwardRef(
       headBodyPaddingY = 10,
       headBodyPaddingX = 0,
       open = true,
+      onClickText,
     }: GanttProps,
     ref: React.ForwardedRef<GanttPropsRefProps>
   ) => {
@@ -60,6 +61,7 @@ const Gantt = forwardRef(
           list={data}
           headBodyPaddingY={headBodyPaddingY}
           onChangeScrollBarHeight={setScrollBarHeight}
+          onClickText={(e) => onClickText && onClickText(e)}
         />
       </div>
     );
