@@ -12,19 +12,19 @@ import {
   GanttPropsRefProps,
 } from "./Gantt/types";
 const list: GanttDataProps[] = [
+  // {
+  //   startTime: "2023-12-11 00:00:00",
+  //   endTime: "2024-01-16 00:00:00",
+  //   finishTime: null,
+  //   dept: "技术部",
+  //   num: "2人",
+  //   time: "2天",
+  //   start: false,
+  //   time2: "结束时间",
+  // },
   {
-    startTime: "2023-12-11 00:00:00",
-    endTime: "2024-01-16 00:00:00",
-    finishTime: null,
-    dept: "技术部",
-    num: "2人",
-    time: "2天",
-    start: false,
-    time2: "结束时间",
-  },
-  {
-    startTime: "2023-12-10 00:00:00",
-    endTime: "2024-3-1 00:00:00",
+    startTime: "2024-3-10 00:00:00",
+    endTime: "2024-3-15 00:00:00",
     finishTime: null,
     dept: "技术部",
     num: "2人",
@@ -49,7 +49,7 @@ const list: GanttDataProps[] = [
     },
   },
   {
-    startTime: "2024-01-01 00:00:00",
+    startTime: "2024-03-01 00:00:00",
     endTime: "2024-04-01 00:00:00",
     finishTime: "2024-03-22 00:00:00",
     dept: "技术部",

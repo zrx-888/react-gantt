@@ -74,7 +74,7 @@ const GanttTime: React.FC<{
   });
 
   // 计算显示位置
-  const initData = () => {
+  const resetPosition = () => {
     const itemWidthEqually = width / 24;
     const newData = newList.map((e) => {
       const endDate = dayjs(e.startTime);
@@ -121,7 +121,7 @@ const GanttTime: React.FC<{
   };
 
   useEffect(() => {
-    initData();
+    resetPosition();
   }, [days]);
 
   useEffect(() => {
