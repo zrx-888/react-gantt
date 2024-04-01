@@ -238,7 +238,14 @@ function App() {
             刷新
           </button>
         </div>
-        <Gantt data={list} head={head} ref={ganttRef} />
+        <Gantt
+          data={list}
+          head={head}
+          ref={ganttRef}
+          onClickText={(e) => {
+            console.log(e);
+          }}
+        />
       </>
     </div>
   );

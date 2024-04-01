@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  BodyRectProps,
   GanttDataProps,
   GanttStatusListProps,
   IListIF,
@@ -9,6 +10,7 @@ import {
 import Loading from "./Loading";
 import { getDaysList, getYearMonth, getStartEndHours, debounce } from "../help";
 import HelpLine from "./HelpLine";
+import Mark from "./Mark";
 
 const defaultStatus: GanttStatusListProps[] = [
   {
@@ -42,6 +44,7 @@ const GanttTime: React.FC<{
   ganttType: string;
   statusList?: GanttStatusListProps[];
   onChangeScrollBarHeight: (e: number) => void;
+  onClickText: (e: IListIF) => void;
 }> = ({
   list,
   headBodyPaddingY,
@@ -51,17 +54,17 @@ const GanttTime: React.FC<{
   ganttType,
   statusList = defaultStatus,
   onChangeScrollBarHeight,
+  onClickText
 }) => {
-  const [showYearList, setSowYearList] = useState<YearListIF[]>([]);
   const [yaerList, setYaerList] = useState<YearListIF[]>([]);
-  const [days, setDays] = useState<string[]>([]);
+  const [days, setDays] = useState<YearListIF[]>([]);
   const [data, setData] = useState<IListIF[]>([]);
   const [newList, setNewList] = useState<IListIF[]>([]);
   const [ganttProgressBarId, setGanttProgressBarId] = useState("");
   const bodyContentRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [headWidth, setHeadWidth] = useState(0);
-  const [bodyRect, setBodyRect] = useState({
+  const [bodyRect, setBodyRect] = useState<BodyRectProps>({
     height: 0,
     scrollWidth: 0,
     scrollHeight: 0,
@@ -125,7 +128,7 @@ const GanttTime: React.FC<{
   }, [days]);
 
   useEffect(() => {
-    setHeadWidth(0);
+    // setHeadWidth(0);
     setTimeout(() => {
       resetSize();
     }, 300);
@@ -134,6 +137,8 @@ const GanttTime: React.FC<{
   // 计算顶部最多显示多少个
   const resetSize = () => {
     const headWidth = document.getElementById("gantt-right")?.offsetWidth;
+    console.log(headWidth);
+
     if (headWidth) {
       const year = getYearMonth(
         maximumDate.startDate,
@@ -146,15 +151,20 @@ const GanttTime: React.FC<{
         const itemWidth = headWidth / day.length;
         setHeadWidth(headWidth);
         setWidth(itemWidth > 40 ? itemWidth : 40);
-        setDays(day);
+        const newDay = day.map((e) => {
+          return {
+            year: e,
+            length: 1,
+          };
+        });
+        setDays(newDay);
       } else if (ganttType === "month") {
         let allDayNum = 0;
         year.forEach((item) => (allDayNum += item.length));
         const itemWidth = headWidth / allDayNum;
         setHeadWidth(headWidth);
         setWidth(itemWidth > 3 ? itemWidth : 3);
-
-        setDays(year.map((e) => e.year));
+        setDays(year);
         const noRepeatYear: { [key: string]: YearListIF } = {};
         const showYear: YearListIF[] = [];
         year.forEach((item) => {
@@ -172,7 +182,7 @@ const GanttTime: React.FC<{
         for (const key in noRepeatYear) {
           showYear.push(noRepeatYear[key]);
         }
-        setSowYearList(showYear);
+        setYaerList(showYear);
       }
     }
   };
@@ -513,7 +523,7 @@ const GanttTime: React.FC<{
                       </div>
                     )}
                 </div>
-                <div className="progress-text">
+                <div className="progress-text" onClick={() => onClickText(item)}>
                   {statusList.filter((e) => item.status === e.status)[0].text}
                 </div>
               </div>
@@ -548,77 +558,40 @@ const GanttTime: React.FC<{
             <div className="gantt-right-body-head-box ">
               <div className="gantt-right-body-head">
                 <div id="top-time-width"></div>
-                {ganttType === "day" ? (
-                  <div className="gantt-right-body-head-list gantt-right-body-head-year">
-                    {yaerList.map((item, index) => {
-                      return (
-                        <div
-                          key={index}
-                          style={{
-                            width: width * item.length + "px",
-                            minWidth: width * item.length + "px",
-                          }}
-                          className="gantt-right-body-head-year-item"
-                        >
-                          {item.year}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="gantt-right-body-head-list gantt-right-body-head-year">
-                    {showYearList.map((item, index) => {
-                      return (
-                        <div
-                          key={index}
-                          style={{
-                            width: width * item.length + "px",
-                            minWidth: width * item.length + "px",
-                          }}
-                          className="gantt-right-body-head-year-item"
-                        >
-                          {item.year}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {ganttType === "day" ? (
-                  <div className="gantt-right-body-head-list">
-                    {days.map((item, index) => {
-                      return (
-                        <div
-                          key={index}
-                          style={{
-                            width: width + "px",
-                            minWidth: width + "px",
-                          }}
-                          className="gantt-right-head-item-day"
-                        >
-                          {item.split("-")[2]}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="gantt-right-body-head-list">
-                    {yaerList.map((item, index) => {
-                      return (
-                        <div
-                          key={index}
-                          style={{
-                            width: width * item.length + "px",
-                            minWidth: width * item.length + "px",
-                          }}
-                          className="gantt-right-head-item-day"
-                        >
-                          {item.year.split("-")[1]}月
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <div className="gantt-right-body-head-list gantt-right-body-head-year">
+                  {yaerList.map((item, index) => {
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          width: width * item.length + "px",
+                          minWidth: width * item.length + "px",
+                        }}
+                        className="gantt-right-body-head-year-item"
+                      >
+                        {item.year}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="gantt-right-body-head-list">
+                  {days.map((item, index) => {
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          width: width * item.length + "px",
+                          minWidth: width * item.length + "px",
+                        }}
+                        className="gantt-right-head-item-day"
+                      >
+                        {ganttType === "day"
+                          ? item.year.split("-")[2]
+                          : item.year.split("-")[1]}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <div
                 className="gantt-right-head-scrollBarWidth"
@@ -633,42 +606,7 @@ const GanttTime: React.FC<{
                   ref={bodyContentRef}
                   id="gantt-right-body-content"
                 >
-                  {ganttType === "day" ? (
-                    <div className="gantt-right-body-content-mark">
-                      {days.map((_, index) => {
-                        return (
-                          <div
-                            style={{
-                              width: width + "px",
-                              minWidth: width + "px",
-                              height: bodyRect.scrollHeight
-                                ? bodyRect.scrollHeight + "px"
-                                : "100%",
-                            }}
-                            className="gantt-right-body-content-mark-item"
-                            key={index}
-                          ></div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="gantt-right-body-content-mark">
-                      {yaerList.map((item, index) => {
-                        return (
-                          <div
-                            style={{
-                              width: width * item.length + "px",
-                              minWidth: width * item.length + "px",
-                              height: "100%",
-                            }}
-                            className="gantt-right-body-content-mark-item"
-                            key={index}
-                          ></div>
-                        );
-                      })}
-                    </div>
-                  )}
-
+                  <Mark days={days} width={width} bodyRect={bodyRect} />
                   <div
                     className="gantt-right-body-cell"
                     style={{
