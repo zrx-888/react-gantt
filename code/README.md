@@ -273,11 +273,18 @@ export default App;
       <th>是否显示左侧收起按钮</th>
     </tr>
     <tr>
+      <th>onClickText</th>
+      <th>()=>{}</th>
+      <th>()=>{}</th>
+      <th>点击右侧文字事件</th>
+    </tr>
+    <tr>
       <th>ref</th>
       <th>GanttPropsRefProps</th>
       <th>null</th>
       <th>ref</th>
     </tr>
+
   </tbody>
 </table>
 
