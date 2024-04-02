@@ -11,6 +11,12 @@ export interface GanttStatusListProps {
   status: GanttDataStatusProps;
   text: string;
 }
+
+export interface BodyRectProps {
+  height: number;
+  scrollWidth: number;
+  scrollHeight: number;
+}
 export interface GanttPropsRefProps {
   initGantt: () => void;
   setGanttType: (type: GanttType) => void;
@@ -59,6 +65,7 @@ export interface GanttHeadProps {
 
 export interface IListIF extends GanttDataProps {
   status?: GanttDataStatusProps;
+  ganttId: string;
   left: number;
   width: number;
   progress: number;
@@ -107,6 +114,11 @@ export interface GanttProps {
    * 是否显示左侧收起按钮
    */
   open?: boolean;
+
+  /**
+   * 点击右侧文字事件
+   */
+  onClickText?: (e: GanttDataProps) => void;
 }
 
 export interface YearListIF {

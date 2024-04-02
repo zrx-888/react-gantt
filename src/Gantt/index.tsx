@@ -21,7 +21,7 @@ const Gantt = forwardRef(
     ref: React.ForwardedRef<GanttPropsRefProps>
   ) => {
     const [openStatus, setOpenStatus] = useState(open);
-    const [isInit, setInit] = useState(false);
+    const [refresh, setRefresh] = useState(false);
     const [myGanttType, setMyGanttType] = useState(ganttType);
     const [scrollBarHeight, setScrollBarHeight] = useState(0);
     useImperativeHandle(ref, () => ({
@@ -29,7 +29,7 @@ const Gantt = forwardRef(
       setGanttType,
     }));
     const initGantt = () => {
-      setInit(!isInit);
+      setRefresh(!refresh);
     };
     const setGanttType = (type: GanttType) => {
       setMyGanttType(type);
@@ -55,7 +55,7 @@ const Gantt = forwardRef(
         />
         <GanttTime
           showLine={showLine}
-          isInit={isInit}
+          refresh={refresh}
           ganttType={myGanttType}
           openStatus={openStatus}
           list={data}

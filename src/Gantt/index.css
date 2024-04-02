@@ -7,7 +7,7 @@
   --waitColor: #e0e2e4;
   --overtimeColor: #f54040;
   --finishOvertimeColor: #00b042;
-
+  user-select: none;
   display: flex;
   overflow: hidden;
   border: 1px solid var(--borderColor);

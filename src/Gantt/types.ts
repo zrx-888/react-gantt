@@ -12,11 +12,10 @@ export interface GanttStatusListProps {
   text: string;
 }
 
-export interface BodyRectProps{
-  height:number
-  scrollWidth:number
-  scrollHeight:number
-  scrollBarHeight:number
+export interface BodyRectProps {
+  height: number;
+  scrollWidth: number;
+  scrollHeight: number;
 }
 export interface GanttPropsRefProps {
   initGantt: () => void;
@@ -64,9 +63,9 @@ export interface GanttHeadProps {
   renderTableHead?: () => JSX.Element;
 }
 
-
 export interface IListIF extends GanttDataProps {
   status?: GanttDataStatusProps;
+  ganttId: string;
   left: number;
   width: number;
   progress: number;
@@ -116,8 +115,10 @@ export interface GanttProps {
    */
   open?: boolean;
 
-  onClickText?: (e: IListIF) => void
-
+  /**
+   * 点击右侧文字事件
+   */
+  onClickText?: (e: GanttDataProps) => void;
 }
 
 export interface YearListIF {

@@ -1,5 +1,28 @@
 import dayjs from "dayjs";
-import { YearListIF } from "./types";
+import { GanttStatusListProps, YearListIF } from "./types";
+
+export const defaultStatus: GanttStatusListProps[] = [
+  {
+    status: "finish",
+    text: "已完成",
+  },
+  {
+    status: "finishOvertime",
+    text: "已完成",
+  },
+  {
+    status: "overtime",
+    text: "已超时",
+  },
+  {
+    status: "progress",
+    text: "进行中",
+  },
+  {
+    status: "wait",
+    text: "待接受",
+  },
+];
 
 export const getYearMonth = (
   startTime: string,
@@ -97,4 +120,22 @@ export function debounce<T extends (...args: unknown[]) => void>(
       fn.apply(this, args);
     }, delay);
   };
+}
+
+export function getUUID() {
+  let uuid = "";
+  const hexDigits = "0123456789abcdef";
+
+  for (let i = 0; i < 36; i++) {
+    if (i === 8 || i === 13 || i === 18 || i === 23) {
+      uuid += "-";
+    } else if (i === 14) {
+      uuid += "4";
+    } else {
+      const randomDigit = Math.floor(Math.random() * 16);
+      uuid += hexDigits[i === 19 ? (randomDigit & 0x3) | 0x8 : randomDigit];
+    }
+  }
+
+  return uuid;
 }

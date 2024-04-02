@@ -215,6 +215,7 @@ const head: GanttHeadProps[] = [
 function App() {
   const ganttRef = useRef<GanttPropsRefProps>(null);
   const [show, setShow] = useState(false);
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "center" }}>

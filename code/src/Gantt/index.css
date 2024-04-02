@@ -7,7 +7,7 @@
   --waitColor: #e0e2e4;
   --overtimeColor: #f54040;
   --finishOvertimeColor: #00b042;
-
+  user-select: none;
   display: flex;
   overflow: hidden;
   border: 1px solid var(--borderColor);
@@ -92,6 +92,12 @@
   box-sizing: border-box;
   border-left: 1px solid rgba(126 134 142 / 16%);
   box-sizing: border-box;
+}
+
+.gantt-right-body-head
+  .gantt-right-body-head-list
+  .gantt-right-head-item-day:first-child {
+  border-left: 0;
 }
 
 .gantt-right-body-item {
@@ -181,6 +187,7 @@
   text-align: center;
   background: #9ce2c3;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 .progressBar-overtime .progress-text {
@@ -250,8 +257,8 @@
 .progressBar-overTimeWidth {
   z-index: 2;
   background: var(--overtimeColor);
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .gantt-right-body-content-mark {

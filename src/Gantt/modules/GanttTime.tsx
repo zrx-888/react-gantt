@@ -7,59 +7,47 @@ import {
   IListIF,
   YearListIF,
 } from "../types";
-import Loading from "./Loading";
-import { getDaysList, getYearMonth, getStartEndHours, debounce } from "../help";
-import HelpLine from "./HelpLine";
+import {
+  getDaysList,
+  getYearMonth,
+  getStartEndHours,
+  debounce,
+  defaultStatus,
+  getUUID,
+} from "../help";
 import Mark from "./Mark";
+import Parent from "./Parent";
+import Children from "./Children";
 
-const defaultStatus: GanttStatusListProps[] = [
-  {
-    status: "finish",
-    text: "已完成",
-  },
-  {
-    status: "finishOvertime",
-    text: "已完成",
-  },
-  {
-    status: "overtime",
-    text: "已超时",
-  },
-  {
-    status: "progress",
-    text: "进行中",
-  },
-  {
-    status: "wait",
-    text: "待接受",
-  },
-];
+interface MaxMinDate {
+  startDate: string;
+  endDate: string;
+}
 
 const GanttTime: React.FC<{
   list: GanttDataProps[];
   headBodyPaddingY: number;
   openStatus: boolean;
-  isInit: boolean;
+  refresh: boolean;
   showLine: boolean;
   ganttType: string;
   statusList?: GanttStatusListProps[];
   onChangeScrollBarHeight: (e: number) => void;
-  onClickText: (e: IListIF) => void;
+  onClickText: (e: GanttDataProps) => void;
 }> = ({
   list,
   headBodyPaddingY,
   openStatus,
-  isInit,
+  refresh,
   showLine,
   ganttType,
   statusList = defaultStatus,
   onChangeScrollBarHeight,
-  onClickText
+  onClickText,
 }) => {
   const [yaerList, setYaerList] = useState<YearListIF[]>([]);
   const [days, setDays] = useState<YearListIF[]>([]);
   const [data, setData] = useState<IListIF[]>([]);
-  const [newList, setNewList] = useState<IListIF[]>([]);
   const [ganttProgressBarId, setGanttProgressBarId] = useState("");
   const bodyContentRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -68,20 +56,17 @@ const GanttTime: React.FC<{
     height: 0,
     scrollWidth: 0,
     scrollHeight: 0,
-    scrollBarHeight: 0,
   });
-
-  const [maximumDate, setMaximumDate] = useState({
-    startDate: "",
-    endDate: "",
-  });
-
   // 计算显示位置
-  const resetPosition = () => {
-    const itemWidthEqually = width / 24;
+  const resetPosition = (
+    chunkWidth: number,
+    maxMinDate: MaxMinDate,
+    newList: IListIF[]
+  ) => {
+    const itemWidthEqually = chunkWidth / 24;
     const newData = newList.map((e) => {
       const endDate = dayjs(e.startTime);
-      const numDays = endDate.diff(maximumDate.startDate, "day");
+      const numDays = endDate.diff(maxMinDate.startDate, "day");
       const startHours = new Date(e.startTime).getHours();
       let progressHours = getStartEndHours("", e.startTime);
       const endHours = getStartEndHours(e.endTime, e.startTime);
@@ -108,6 +93,7 @@ const GanttTime: React.FC<{
         }
       }
       const progress = progressHours / endHours;
+
       return {
         ...e,
         startTime: e.startTime,
@@ -117,54 +103,39 @@ const GanttTime: React.FC<{
         progress: progress,
         status: e.status,
         width: endHours * itemWidthEqually,
-        left: numDays * width + startHours * itemWidthEqually - 5,
+        left: numDays * chunkWidth + startHours * itemWidthEqually - 5,
       };
     });
     setData(newData);
   };
-
-  useEffect(() => {
-    resetPosition();
-  }, [days]);
-
-  useEffect(() => {
-    // setHeadWidth(0);
-    setTimeout(() => {
-      resetSize();
-    }, 300);
-  }, [maximumDate, openStatus]);
-
   // 计算顶部最多显示多少个
-  const resetSize = () => {
+  const resetSize = (maxMinDate: MaxMinDate, newList: IListIF[]) => {
     const headWidth = document.getElementById("gantt-right")?.offsetWidth;
-    console.log(headWidth);
-
     if (headWidth) {
       const year = getYearMonth(
-        maximumDate.startDate,
-        maximumDate.endDate,
+        maxMinDate.startDate,
+        maxMinDate.endDate,
         ganttType
       );
+      let width = 0;
       setYaerList(year);
       if (ganttType === "day") {
-        const day = getDaysList(maximumDate.startDate, maximumDate.endDate);
+        const day = getDaysList(maxMinDate.startDate, maxMinDate.endDate);
         const itemWidth = headWidth / day.length;
-        setHeadWidth(headWidth);
-        setWidth(itemWidth > 40 ? itemWidth : 40);
+        width = itemWidth > 40 ? itemWidth : 40;
         const newDay = day.map((e) => {
           return {
             year: e,
             length: 1,
           };
         });
+        setHeadWidth(headWidth);
         setDays(newDay);
       } else if (ganttType === "month") {
         let allDayNum = 0;
         year.forEach((item) => (allDayNum += item.length));
         const itemWidth = headWidth / allDayNum;
-        setHeadWidth(headWidth);
-        setWidth(itemWidth > 3 ? itemWidth : 3);
-        setDays(year);
+        width = itemWidth > 3 ? itemWidth : 3;
         const noRepeatYear: { [key: string]: YearListIF } = {};
         const showYear: YearListIF[] = [];
         year.forEach((item) => {
@@ -182,15 +153,19 @@ const GanttTime: React.FC<{
         for (const key in noRepeatYear) {
           showYear.push(noRepeatYear[key]);
         }
+        setHeadWidth(headWidth);
+        setDays(year);
         setYaerList(showYear);
       }
+      // 计算位置
+      resetPosition(width, maxMinDate, newList);
+      setWidth(width);
     }
   };
-
-  useEffect(() => {
+  const handleWindowResize = () => {
     setData([]);
     initGantt();
-  }, [list, isInit, ganttType]);
+  };
 
   const initGantt = () => {
     const newlist: IListIF[] = [];
@@ -198,6 +173,7 @@ const GanttTime: React.FC<{
       if (index > 0) {
         newlist.push({
           ...item,
+          ganttId: getUUID(),
           isParent: true,
           isEmpty: false,
           parentIsEmpty: true,
@@ -208,6 +184,7 @@ const GanttTime: React.FC<{
       }
       newlist.push({
         ...item,
+        ganttId: getUUID(),
         isParent: true,
         isEmpty: false,
         parentIsEmpty: false,
@@ -221,6 +198,7 @@ const GanttTime: React.FC<{
           if (n === 0) {
             newlist.push({
               ...i,
+              ganttId: getUUID(),
               isParent: false,
               parentIsEmpty: false,
               isEmpty: true,
@@ -231,6 +209,7 @@ const GanttTime: React.FC<{
           }
           newlist.push({
             ...i,
+            ganttId: getUUID(),
             parentIsEmpty: false,
             isParent: false,
             isEmpty: false,
@@ -278,6 +257,10 @@ const GanttTime: React.FC<{
       .map((item) => new Date(item.endTime).getTime())
       .sort((e, e2) => e2 - e);
     // 如果当前开始月份===结束月份 则是当前月份
+    const maxMinDate = {
+      startDate: "",
+      endDate: "",
+    };
     if (ganttType === "day") {
       if (
         dayjs(startDate[0]).format("YYYY-MM") ===
@@ -293,19 +276,31 @@ const GanttTime: React.FC<{
         const nowMonthLastDayTime = dayjs(endDate[0] + 86400000 * 2)
           .endOf("month")
           .format("YYYY-MM-DD");
-        setMaximumDate({
-          startDate: dayjs(startDate[0]).format("YYYY-MM") + "-01",
-          // 如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
-          endDate:
-            nextTwoEndDateMonth === lastDateMonth
-              ? nowMonthLastDayTime
-              : dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD"),
-        });
+        maxMinDate.startDate = dayjs(startDate[0]).format("YYYY-MM") + "-01";
+        // 如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
+        maxMinDate.endDate =
+          nextTwoEndDateMonth === lastDateMonth
+            ? nowMonthLastDayTime
+            : dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD");
+        // setMaximumDate({
+        //   startDate: dayjs(startDate[0]).format("YYYY-MM") + "-01",
+        //   // 如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
+        //   endDate:
+        //     nextTwoEndDateMonth === lastDateMonth
+        //       ? nowMonthLastDayTime
+        //       : dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD"),
+        // });
       } else {
-        setMaximumDate({
-          startDate: dayjs(startDate[0] - 86400000).format("YYYY-MM-DD"),
-          endDate: dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD"),
-        });
+        maxMinDate.startDate = dayjs(startDate[0] - 86400000).format(
+          "YYYY-MM-DD"
+        );
+        maxMinDate.endDate = dayjs(endDate[0] + 86400000 * 2).format(
+          "YYYY-MM-DD"
+        );
+        // setMaximumDate({
+        //   startDate: dayjs(startDate[0] - 86400000).format("YYYY-MM-DD"),
+        //   endDate: dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD"),
+        // });
       }
     } else if (ganttType === "month") {
       if (
@@ -321,45 +316,64 @@ const GanttTime: React.FC<{
         const nowMonthLastDayTime = dayjs(endDate[0] + 86400000 * 5)
           .endOf("month")
           .format("YYYY-MM-DD");
-
-        setMaximumDate({
-          startDate: dayjs(startDate[0]).format("YYYY") + "-01-01",
-          //  如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
-          endDate:
-            nextTwoEndDateMonth === lastDateMonth
-              ? nowMonthLastDayTime
-              : dayjs(endDate[0]).format("YYYY-MM-DD"),
-        });
+        maxMinDate.startDate = dayjs(startDate[0]).format("YYYY") + "-01-01";
+        maxMinDate.endDate =
+          nextTwoEndDateMonth === lastDateMonth
+            ? nowMonthLastDayTime
+            : dayjs(endDate[0]).format("YYYY-MM-DD");
+        // setMaximumDate({
+        //   startDate: dayjs(startDate[0]).format("YYYY") + "-01-01",
+        //   //  如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
+        //   endDate:
+        //     nextTwoEndDateMonth === lastDateMonth
+        //       ? nowMonthLastDayTime
+        //       : dayjs(endDate[0]).format("YYYY-MM-DD"),
+        // });
       } else {
-        setMaximumDate({
-          startDate: dayjs(startDate[0] - 86400000).format("YYYY-MM") + "-01",
-          // startDate: dayjs(startDate[0])
-          //   .add(-1, "month")
-          //   .startOf("month")
-          //   .format("YYYY-MM-DD"),
-          endDate: dayjs(endDate[0] + 86400000 * 5).format("YYYY-MM-DD"),
-        });
+        maxMinDate.startDate =
+          dayjs(startDate[0] - 86400000).format("YYYY-MM") + "-01";
+        maxMinDate.endDate = dayjs(endDate[0] + 86400000 * 5).format(
+          "YYYY-MM-DD"
+        );
+        // setMaximumDate({
+        //   startDate: dayjs(startDate[0] - 86400000).format("YYYY-MM") + "-01",
+        //   // startDate: dayjs(startDate[0])
+        //   //   .add(-1, "month")
+        //   //   .startOf("month")
+        //   //   .format("YYYY-MM-DD"),
+        //   endDate: dayjs(endDate[0] + 86400000 * 5).format("YYYY-MM-DD"),
+        // });
       }
     }
-
-    setNewList(listTime);
-    return listTime;
+    resetSize(maxMinDate, listTime);
   };
 
   const handleMouseLeave = () => {
     setGanttProgressBarId("");
   };
 
+  const handleScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    document.getElementsByClassName(
+      "gantt-right-body-head"
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+    )[0].scrollLeft = event.target.scrollLeft;
+
+    document.getElementsByClassName(
+      "ganttOverview-body-height"
+      // eslint-disable-next-line  @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+    )[0].scrollTop = event.target.scrollTop;
+  };
   useEffect(() => {
-    const handleWindowResize = () => {
-      initGantt();
-    };
-    window.addEventListener("resize", debounce(handleWindowResize, 200));
+    if (list.length) {
+      handleWindowResize();
+      window.addEventListener("resize", debounce(handleWindowResize, 200));
+    }
     return () => {
       window.removeEventListener("resize", handleWindowResize);
     };
-  }, []);
-
+  }, [list, refresh, ganttType]);
   useEffect(() => {
     if (bodyContentRef.current) {
       setBodyRect({
@@ -368,30 +382,22 @@ const GanttTime: React.FC<{
         scrollWidth:
           bodyContentRef.current.offsetWidth -
           bodyContentRef.current.clientWidth,
-        scrollBarHeight:
-          bodyContentRef.current.offsetHeight -
-          bodyContentRef.current.clientHeight,
       });
       onChangeScrollBarHeight(
         bodyContentRef.current.offsetHeight -
           bodyContentRef.current.clientHeight
       );
-      bodyContentRef.current.addEventListener("scroll", (event) => {
-        if (event.target) {
-          document.getElementsByClassName(
-            "gantt-right-body-head"
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-          )[0].scrollLeft = event.target.scrollLeft;
-          document.getElementsByClassName(
-            "ganttOverview-body-height"
-            // eslint-disable-next-line  @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-          )[0].scrollTop = event.target.scrollTop;
-        }
-      });
     }
   }, [bodyContentRef.current]);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      setTimeout(() => {
+        handleWindowResize();
+      }, 350);
+    }
+  }, [openStatus]);
+
   const DataMome = useMemo(() => {
     return (
       <>
@@ -407,137 +413,27 @@ const GanttTime: React.FC<{
               className="gantt-right-body-cell gantt-right-body-cell-parentIsEmpty"
             ></div>
           ) : !item.isParent ? (
-            <div
-              key={index}
-              className="gantt-right-body-cell gantt-right-body-cell-isParent-false"
-            >
-              <div
-                id={"gantt-progressBar-Id" + index}
-                onMouseEnter={() =>
-                  handleMouseEnter("gantt-progressBar-Id" + index)
-                }
-                onMouseLeave={handleMouseLeave}
-                className={`progressBar progressBar-${item.status}`}
-                style={{
-                  padding: "5px",
-                  border: "0",
-                  background: "transparent",
-                  left: item.left + "px",
-                }}
-              >
-                <div className="progressBar-box">
-                  <div className="progressBar-render progressBar-render-child">
-                    {item.renderoBar &&
-                      item.renderoBar(
-                        item.width,
-                        item.width * item.progress,
-                        item.width - item.width * item.progress,
-                        item.overtimeWidth
-                      )}
-                  </div>
-                  <div
-                    className="progressBar-default progressBar-default-child"
-                    style={{ width: item.width + "px" }}
-                  >
-                    <div
-                      className="progressBar-active progressBar-active-child"
-                      style={{
-                        width: item.progress * 100 + "%",
-                      }}
-                    ></div>
-                  </div>
-                  {(item.status === "overtime" ||
-                    item.status === "finishOvertime") &&
-                    item.overtimeWidth && (
-                      <div
-                        className="progressBar-overTimeWidth progressBar-overTimeWidth-child"
-                        style={{
-                          width: item.overtimeWidth + "px",
-                        }}
-                      >
-                        <div className="overtimeRender"></div>
-                      </div>
-                    )}
-                </div>
-              </div>
-              {showLine &&
-                ganttProgressBarId === `gantt-progressBar-Id${index}` && (
-                  <HelpLine
-                    ganttProgressBarId={ganttProgressBarId}
-                    item={{
-                      ...item,
-                      ganttProgressBarId: "gantt-progressBar-Id" + index,
-                    }}
-                  />
-                )}
-            </div>
+            <Children
+              key={item.ganttId}
+              item={item}
+              index={index}
+              showLine={showLine}
+              ganttProgressBarId={ganttProgressBarId}
+              onMouseEnter={handleMouseEnter}
+              handleMouseLeave={handleMouseLeave}
+            />
           ) : item.isParent ? (
-            <div
-              key={index}
-              className="gantt-right-body-cell gantt-right-body-cell-isParent-true"
-            >
-              <div
-                id={"gantt-progressBar-Id" + index}
-                onMouseEnter={() =>
-                  handleMouseEnter("gantt-progressBar-Id" + index)
-                }
-                onMouseLeave={handleMouseLeave}
-                className={`progressBar progressBar-${item.status}`}
-                style={{
-                  left: item.left + "px",
-                }}
-              >
-                <div className="progressBar-box">
-                  <div className="progressBar-render">
-                    {item.renderoBar &&
-                      item.renderoBar(
-                        item.width,
-                        item.width * item.progress,
-                        item.width - item.width * item.progress,
-                        item.overtimeWidth
-                      )}
-                  </div>
-                  <div
-                    className="progressBar-default"
-                    style={{
-                      width: item.width + "px",
-                    }}
-                  >
-                    <div
-                      className="progressBar-active"
-                      style={{
-                        width: item.progress * 100 + "%",
-                      }}
-                    ></div>
-                  </div>
-                  {(item.status === "overtime" ||
-                    item.status === "finishOvertime") &&
-                    item.overtimeWidth && (
-                      <div
-                        className="progressBar-overTimeWidth"
-                        style={{
-                          width: item.overtimeWidth + "px",
-                        }}
-                      >
-                        <div className="overtimeRender"></div>
-                      </div>
-                    )}
-                </div>
-                <div className="progress-text" onClick={() => onClickText(item)}>
-                  {statusList.filter((e) => item.status === e.status)[0].text}
-                </div>
-              </div>
-              {showLine &&
-                ganttProgressBarId === `gantt-progressBar-Id${index}` && (
-                  <HelpLine
-                    ganttProgressBarId={ganttProgressBarId}
-                    item={{
-                      ...item,
-                      ganttProgressBarId: "gantt-progressBar-Id" + index,
-                    }}
-                  />
-                )}
-            </div>
+            <Parent
+              key={item.ganttId}
+              item={item}
+              index={index}
+              showLine={showLine}
+              ganttProgressBarId={ganttProgressBarId}
+              statusList={statusList}
+              onMouseEnter={handleMouseEnter}
+              onClickText={onClickText}
+              handleMouseLeave={handleMouseLeave}
+            />
           ) : (
             <></>
           );
@@ -546,92 +442,87 @@ const GanttTime: React.FC<{
     );
   }, [data, ganttProgressBarId]);
 
+  const Placeholder = useMemo(() => {
+    return (
+      <div
+        className="gantt-right-body-cell"
+        style={{
+          height: headBodyPaddingY + "px",
+        }}
+      ></div>
+    );
+  }, [headBodyPaddingY]);
+
   return (
     <>
       <div className="gantt-right" id="gantt-right">
-        {headWidth > 0 ? (
-          <div
-            className="gantt-right-body"
-            id="gantt-right-body"
-            style={{ width: headWidth + "px" }}
-          >
-            <div className="gantt-right-body-head-box ">
-              <div className="gantt-right-body-head">
-                <div id="top-time-width"></div>
-                <div className="gantt-right-body-head-list gantt-right-body-head-year">
-                  {yaerList.map((item, index) => {
-                    return (
-                      <div
-                        key={index}
-                        style={{
-                          width: width * item.length + "px",
-                          minWidth: width * item.length + "px",
-                        }}
-                        className="gantt-right-body-head-year-item"
-                      >
-                        {item.year}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="gantt-right-body-head-list">
-                  {days.map((item, index) => {
-                    return (
-                      <div
-                        key={index}
-                        style={{
-                          width: width * item.length + "px",
-                          minWidth: width * item.length + "px",
-                        }}
-                        className="gantt-right-head-item-day"
-                      >
-                        {ganttType === "day"
-                          ? item.year.split("-")[2]
-                          : item.year.split("-")[1]}
-                      </div>
-                    );
-                  })}
-                </div>
+        <div
+          className="gantt-right-body"
+          id="gantt-right-body"
+          style={{ width: headWidth + "px" }}
+        >
+          <div className="gantt-right-body-head-box ">
+            <div className="gantt-right-body-head">
+              <div id="top-time-width"></div>
+              <div className="gantt-right-body-head-list gantt-right-body-head-year">
+                {yaerList.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        width: width * item.length + "px",
+                        minWidth: width * item.length + "px",
+                      }}
+                      className="gantt-right-body-head-year-item"
+                    >
+                      {item.year}
+                    </div>
+                  );
+                })}
               </div>
-              <div
-                className="gantt-right-head-scrollBarWidth"
-                style={{ width: bodyRect.scrollWidth }}
-              ></div>
+              <div className="gantt-right-body-head-list">
+                {days.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        width: width * item.length + "px",
+                        minWidth: width * item.length + "px",
+                      }}
+                      className="gantt-right-head-item-day"
+                    >
+                      {ganttType === "day"
+                        ? item.year.split("-")[2]
+                        : item.year.split("-")[1]}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+            <div
+              className="gantt-right-head-scrollBarWidth"
+              style={{ width: bodyRect.scrollWidth }}
+            ></div>
+          </div>
 
-            <div className="gantt-right-body-body">
-              <div style={{ flex: 1, overflow: "hidden" }}>
-                <div
-                  className="gantt-right-body-content"
-                  ref={bodyContentRef}
-                  id="gantt-right-body-content"
-                >
-                  <Mark days={days} width={width} bodyRect={bodyRect} />
-                  <div
-                    className="gantt-right-body-cell"
-                    style={{
-                      height: headBodyPaddingY + "px",
-                    }}
-                  ></div>
-                  {DataMome}
-                  <div
-                    className="gantt-right-body-cell"
-                    style={{
-                      height: headBodyPaddingY + "px",
-                    }}
-                  ></div>
-                </div>
+          <div className="gantt-right-body-body">
+            <div style={{ flex: 1, overflow: "hidden" }}>
+              <div
+                className="gantt-right-body-content"
+                ref={bodyContentRef}
+                onScroll={handleScroll}
+                id="gantt-right-body-content"
+              >
+                <Mark days={days} width={width} bodyRect={bodyRect} />
+                {Placeholder}
+                {DataMome}
+                {Placeholder}
               </div>
             </div>
           </div>
-        ) : (
-          <div className="gantt-loading">
-            <Loading />
-          </div>
-        )}
+        </div>
       </div>
     </>
   );
 };
-
 export default GanttTime;
