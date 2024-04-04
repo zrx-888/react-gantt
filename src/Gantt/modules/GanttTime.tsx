@@ -4,6 +4,7 @@ import {
   BodyRectProps,
   GanttDataProps,
   GanttStatusListProps,
+  GanttType,
   IListIF,
   YearListIF,
 } from "../types";
@@ -30,7 +31,7 @@ const GanttTime: React.FC<{
   openStatus: boolean;
   refresh: boolean;
   showLine: boolean;
-  ganttType: string;
+  ganttType: GanttType;
   statusList?: GanttStatusListProps[];
   onChangeScrollBarHeight: (e: number) => void;
   onClickText: (e: GanttDataProps) => void;
@@ -111,7 +112,13 @@ const GanttTime: React.FC<{
   // 计算顶部最多显示多少个
   const resetSize = (maxMinDate: MaxMinDate, newList: IListIF[]) => {
     const headWidth = document.getElementById("gantt-right")?.offsetWidth;
+    let contentHeight = headBodyPaddingY * 2;
+    newList.forEach((item) => {
+      contentHeight += item.height;
+    });
+  
     if (headWidth) {
+      
       const year = getYearMonth(
         maxMinDate.startDate,
         maxMinDate.endDate,
@@ -119,6 +126,8 @@ const GanttTime: React.FC<{
       );
       let width = 0;
       setYaerList(year);
+      console.log(year);
+      
       if (ganttType === "day") {
         const day = getDaysList(maxMinDate.startDate, maxMinDate.endDate);
         const itemWidth = headWidth / day.length;
@@ -227,7 +236,8 @@ const GanttTime: React.FC<{
   };
   // 初始数组的处理
   const initList = (list: IListIF[]) => {
-    const listTime = [...list];
+  let isOvertime = false;
+  const listTime = [...list];
     listTime.forEach((item) => {
       if (item.start) {
         const startTime = new Date(item.startTime).getTime();
@@ -238,6 +248,7 @@ const GanttTime: React.FC<{
         if (!finishTime) {
           if (new Date().getTime() > endTime) {
             item.status = "overtime";
+            isOvertime=true
           } else {
             item.status = "progress";
           }
@@ -282,14 +293,6 @@ const GanttTime: React.FC<{
           nextTwoEndDateMonth === lastDateMonth
             ? nowMonthLastDayTime
             : dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD");
-        // setMaximumDate({
-        //   startDate: dayjs(startDate[0]).format("YYYY-MM") + "-01",
-        //   // 如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
-        //   endDate:
-        //     nextTwoEndDateMonth === lastDateMonth
-        //       ? nowMonthLastDayTime
-        //       : dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD"),
-        // });
       } else {
         maxMinDate.startDate = dayjs(startDate[0] - 86400000).format(
           "YYYY-MM-DD"
@@ -297,12 +300,12 @@ const GanttTime: React.FC<{
         maxMinDate.endDate = dayjs(endDate[0] + 86400000 * 2).format(
           "YYYY-MM-DD"
         );
-        // setMaximumDate({
-        //   startDate: dayjs(startDate[0] - 86400000).format("YYYY-MM-DD"),
-        //   endDate: dayjs(endDate[0] + 86400000 * 2).format("YYYY-MM-DD"),
-        // });
       }
     } else if (ganttType === "month") {
+      
+      const now = dayjs(startDate[0]);
+        const lastMonth = now.subtract(1, "month");
+        
       if (
         dayjs(startDate[0]).format("YYYY") === dayjs(endDate[0]).format("YYYY")
       ) {
@@ -316,35 +319,33 @@ const GanttTime: React.FC<{
         const nowMonthLastDayTime = dayjs(endDate[0] + 86400000 * 5)
           .endOf("month")
           .format("YYYY-MM-DD");
-        maxMinDate.startDate = dayjs(startDate[0]).format("YYYY") + "-01-01";
+        maxMinDate.startDate =
+        dayjs(startDate[0]).format("YYYY") +"-"+
+          lastMonth.format("MM") +
+          "-01";
         maxMinDate.endDate =
           nextTwoEndDateMonth === lastDateMonth
             ? nowMonthLastDayTime
             : dayjs(endDate[0]).format("YYYY-MM-DD");
-        // setMaximumDate({
-        //   startDate: dayjs(startDate[0]).format("YYYY") + "-01-01",
-        //   //  如果加2天还等于当前月份 则取当前月份最后一天 否则获取下个月份2天后的值
-        //   endDate:
-        //     nextTwoEndDateMonth === lastDateMonth
-        //       ? nowMonthLastDayTime
-        //       : dayjs(endDate[0]).format("YYYY-MM-DD"),
-        // });
       } else {
         maxMinDate.startDate =
-          dayjs(startDate[0] - 86400000).format("YYYY-MM") + "-01";
+        dayjs(startDate[0]).format("YYYY") +"-"+
+          lastMonth.format("MM") +
+          "-01";
         maxMinDate.endDate = dayjs(endDate[0] + 86400000 * 5).format(
           "YYYY-MM-DD"
         );
-        // setMaximumDate({
-        //   startDate: dayjs(startDate[0] - 86400000).format("YYYY-MM") + "-01",
-        //   // startDate: dayjs(startDate[0])
-        //   //   .add(-1, "month")
-        //   //   .startOf("month")
-        //   //   .format("YYYY-MM-DD"),
-        //   endDate: dayjs(endDate[0] + 86400000 * 5).format("YYYY-MM-DD"),
-        // });
       }
     }
+    if (
+      isOvertime &&
+      new Date(maxMinDate.endDate).getTime() < new Date().getTime()
+    ) {
+      maxMinDate.endDate = dayjs(new Date().getTime() + 86400000 * 3).format(
+        "YYYY-MM-DD"
+      );
+    }
+  
     resetSize(maxMinDate, listTime);
   };
 
@@ -376,17 +377,17 @@ const GanttTime: React.FC<{
   }, [list, refresh, ganttType]);
   useEffect(() => {
     if (bodyContentRef.current) {
+      const barHeight =
+        bodyContentRef.current.offsetHeight -
+        bodyContentRef.current.clientHeight;
       setBodyRect({
-        scrollHeight: bodyContentRef.current.scrollHeight,
+        scrollHeight:bodyContentRef.current.scrollHeight>bodyContentRef.current.clientHeight?bodyContentRef.current.scrollHeight:0,
         height: bodyContentRef.current.offsetHeight,
         scrollWidth:
           bodyContentRef.current.offsetWidth -
           bodyContentRef.current.clientWidth,
       });
-      onChangeScrollBarHeight(
-        bodyContentRef.current.offsetHeight -
-          bodyContentRef.current.clientHeight
-      );
+      onChangeScrollBarHeight(barHeight);
     }
   }, [bodyContentRef.current]);
 
