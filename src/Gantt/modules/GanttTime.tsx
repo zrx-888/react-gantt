@@ -27,7 +27,6 @@ interface MaxMinDate {
 const GanttTime: React.FC<{
   list: GanttDataProps[];
   headBodyPaddingY: number;
-  openStatus: boolean;
   refresh: boolean;
   showLine: boolean;
   ganttType: string;
@@ -37,7 +36,6 @@ const GanttTime: React.FC<{
 }> = ({
   list,
   headBodyPaddingY,
-  openStatus,
   refresh,
   showLine,
   ganttType,
@@ -389,14 +387,6 @@ const GanttTime: React.FC<{
       );
     }
   }, [bodyContentRef.current]);
-
-  useEffect(() => {
-    if (data.length > 0) {
-      setTimeout(() => {
-        handleWindowResize();
-      }, 350);
-    }
-  }, [openStatus]);
 
   const DataMome = useMemo(() => {
     return (
