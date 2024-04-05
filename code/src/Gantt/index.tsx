@@ -20,7 +20,6 @@ const Gantt = forwardRef(
     }: GanttProps,
     ref: React.ForwardedRef<GanttPropsRefProps>
   ) => {
-    const [openStatus, setOpenStatus] = useState(open);
     const [refresh, setRefresh] = useState(false);
     const [myGanttType, setMyGanttType] = useState(ganttType);
     const [scrollBarHeight, setScrollBarHeight] = useState(0);
@@ -29,7 +28,9 @@ const Gantt = forwardRef(
       setGanttType,
     }));
     const initGantt = () => {
-      setRefresh(!refresh);
+      setTimeout(() => {
+        setRefresh(!refresh);
+      }, 300);
     };
     const setGanttType = (type: GanttType) => {
       setMyGanttType(type);
@@ -49,15 +50,12 @@ const Gantt = forwardRef(
           headBodyPaddingX={headBodyPaddingX}
           headWidth={headWidth}
           scrollBarHeight={scrollBarHeight}
-          onChange={(e) => {
-            setOpenStatus(e);
-          }}
+          onChange={initGantt}
         />
         <GanttTime
           showLine={showLine}
           refresh={refresh}
           ganttType={myGanttType}
-          openStatus={openStatus}
           list={data}
           headBodyPaddingY={headBodyPaddingY}
           onChangeScrollBarHeight={setScrollBarHeight}

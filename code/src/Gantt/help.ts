@@ -1,5 +1,11 @@
 import dayjs from "dayjs";
-import { GanttStatusListProps, YearListIF } from "./types";
+import {
+  GanttDataProps,
+  GanttStatusListProps,
+  GanttType,
+  IListIF,
+  YearListIF,
+} from "./types";
 
 export const defaultStatus: GanttStatusListProps[] = [
   {
@@ -24,24 +30,32 @@ export const defaultStatus: GanttStatusListProps[] = [
   },
 ];
 
+const getMonthBetween = (start: string, end: string) => {
+  const startDate = new Date(start.slice(0, 8));
+  const endDate = new Date(end.slice(0, 8));
+  const result = [];
+  while (startDate <= endDate) {
+    result.push(dayjs(startDate).format("YYYY-MM"));
+    startDate.setMonth(startDate.getMonth() + 1);
+  }
+  return result;
+};
+
 export const getYearMonth = (
   startTime: string,
   endTime: string,
-  showDateType: string
+  showDateType: GanttType
 ): YearListIF[] => {
   const startDate = new Date(startTime);
-  const endDate = new Date(new Date(endTime).getTime() + 86400000 * 30);
-  const dateArray = [];
+  const endDate =
+    showDateType === "day"
+      ? new Date(endTime)
+      : new Date(new Date(endTime).getTime() + 86400000 * 30);
   const currentDate = startDate;
   const yearList: YearListIF[] = [];
-
   if (showDateType === "day") {
-    while (currentDate <= endDate) {
-      dateArray.push(dayjs(currentDate).format("YYYY-MM"));
-      currentDate.setMonth(currentDate.getMonth() + 1);
-    }
-
-    dateArray.forEach((item, index) => {
+    const dateMonth = getMonthBetween(startTime, endTime);
+    dateMonth.forEach((item, index) => {
       const year = Number(item.split("-")[0]);
       const month = Number(item.split("-")[1]);
       if (index === 0) {
@@ -52,7 +66,7 @@ export const getYearMonth = (
             dayjs(startTime).date() +
             1,
         });
-      } else if (index === dateArray.length - 1) {
+      } else if (index === dateMonth.length - 1) {
         yearList.push({
           year: `${year}-${month}`,
           length: new Date(endTime).getDate(),
@@ -65,11 +79,11 @@ export const getYearMonth = (
       }
     });
   } else if (showDateType === "month") {
+    const dateArray = [];
     while (currentDate <= endDate) {
       dateArray.push(dayjs(currentDate).format("YYYY-MM"));
       currentDate.setMonth(currentDate.getMonth() + 1);
     }
-
     dateArray.forEach((item) => {
       const year = Number(item.split("-")[0]);
       const month = Number(item.split("-")[1]);
@@ -138,4 +152,76 @@ export function getUUID() {
   }
 
   return uuid;
+}
+
+export const initGantt = (list: GanttDataProps[]) => {
+  const newlist: IListIF[] = [];
+  list.forEach((item, index) => {
+    if (index > 0) {
+      newlist.push({
+        ...item,
+        ganttId: getUUID(),
+        isParent: true,
+        isEmpty: false,
+        parentIsEmpty: true,
+        height: 10,
+        left: 0,
+        width: 0,
+        progress: 0,
+      });
+    }
+    newlist.push({
+      ...item,
+      ganttId: getUUID(),
+      isParent: true,
+      height: 40,
+      isEmpty: false,
+      parentIsEmpty: false,
+      left: 0,
+      width: 0,
+      progress: 0,
+    });
+
+    item.children &&
+      item.children.forEach((i, n) => {
+        if (n === 0) {
+          newlist.push({
+            ...i,
+            ganttId: getUUID(),
+            isParent: false,
+            parentIsEmpty: false,
+            isEmpty: true,
+            height: 15,
+            left: 0,
+            width: 0,
+            progress: 0,
+          });
+        }
+        newlist.push({
+          ...i,
+          ganttId: getUUID(),
+          parentIsEmpty: false,
+          height: 30,
+          isParent: false,
+          isEmpty: false,
+          left: 0,
+          width: 0,
+          progress: 0,
+        });
+      });
+  });
+  return newlist;
+};
+
+export function calculateScrollbarWidth() {
+  const tempDiv = document.createElement("div");
+  tempDiv.style.position = "absolute";
+  tempDiv.style.visibility = "hidden";
+  tempDiv.style.overflow = "scroll";
+  tempDiv.style.width = "100px";
+  tempDiv.style.height = "100px";
+  document.body.appendChild(tempDiv);
+  const scrollbarWidth = 100 - tempDiv.clientWidth;
+  document.body.removeChild(tempDiv);
+  return scrollbarWidth;
 }
