@@ -114,9 +114,8 @@ const GanttTime: React.FC<{
     newList.forEach((item) => {
       contentHeight += item.height;
     });
-  
+
     if (headWidth) {
-      
       const year = getYearMonth(
         maxMinDate.startDate,
         maxMinDate.endDate,
@@ -124,8 +123,6 @@ const GanttTime: React.FC<{
       );
       let width = 0;
       setYaerList(year);
-      console.log(year);
-      
       if (ganttType === "day") {
         const day = getDaysList(maxMinDate.startDate, maxMinDate.endDate);
         const itemWidth = headWidth / day.length;
@@ -234,8 +231,8 @@ const GanttTime: React.FC<{
   };
   // 初始数组的处理
   const initList = (list: IListIF[]) => {
-  let isOvertime = false;
-  const listTime = [...list];
+    let isOvertime = false;
+    const listTime = [...list];
     listTime.forEach((item) => {
       if (item.start) {
         const startTime = new Date(item.startTime).getTime();
@@ -246,7 +243,7 @@ const GanttTime: React.FC<{
         if (!finishTime) {
           if (new Date().getTime() > endTime) {
             item.status = "overtime";
-            isOvertime=true
+            isOvertime = true;
           } else {
             item.status = "progress";
           }
@@ -300,10 +297,9 @@ const GanttTime: React.FC<{
         );
       }
     } else if (ganttType === "month") {
-      
       const now = dayjs(startDate[0]);
-        const lastMonth = now.subtract(1, "month");
-        
+      const lastMonth = now.subtract(1, "month");
+
       if (
         dayjs(startDate[0]).format("YYYY") === dayjs(endDate[0]).format("YYYY")
       ) {
@@ -318,7 +314,8 @@ const GanttTime: React.FC<{
           .endOf("month")
           .format("YYYY-MM-DD");
         maxMinDate.startDate =
-        dayjs(startDate[0]).format("YYYY") +"-"+
+          dayjs(startDate[0]).format("YYYY") +
+          "-" +
           lastMonth.format("MM") +
           "-01";
         maxMinDate.endDate =
@@ -327,7 +324,8 @@ const GanttTime: React.FC<{
             : dayjs(endDate[0]).format("YYYY-MM-DD");
       } else {
         maxMinDate.startDate =
-        dayjs(startDate[0]).format("YYYY") +"-"+
+          dayjs(startDate[0]).format("YYYY") +
+          "-" +
           lastMonth.format("MM") +
           "-01";
         maxMinDate.endDate = dayjs(endDate[0] + 86400000 * 5).format(
@@ -343,7 +341,7 @@ const GanttTime: React.FC<{
         "YYYY-MM-DD"
       );
     }
-  
+
     resetSize(maxMinDate, listTime);
   };
 
@@ -379,7 +377,11 @@ const GanttTime: React.FC<{
         bodyContentRef.current.offsetHeight -
         bodyContentRef.current.clientHeight;
       setBodyRect({
-        scrollHeight:bodyContentRef.current.scrollHeight>bodyContentRef.current.clientHeight?bodyContentRef.current.scrollHeight:0,
+        scrollHeight:
+          bodyContentRef.current.scrollHeight >
+          bodyContentRef.current.clientHeight
+            ? bodyContentRef.current.scrollHeight
+            : 0,
         height: bodyContentRef.current.offsetHeight,
         scrollWidth:
           bodyContentRef.current.offsetWidth -

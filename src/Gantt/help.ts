@@ -46,8 +46,6 @@ export const getYearMonth = (
   endTime: string,
   showDateType: GanttType
 ): YearListIF[] => {
-  console.log(endTime);
-  
   const startDate = new Date(startTime);
   const endDate =
     showDateType === "day"

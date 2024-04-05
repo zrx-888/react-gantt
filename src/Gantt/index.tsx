@@ -28,7 +28,9 @@ const Gantt = forwardRef(
       setGanttType,
     }));
     const initGantt = () => {
-      setRefresh(!refresh);
+      setTimeout(() => {
+        setRefresh(!refresh);
+      }, 300);
     };
     const setGanttType = (type: GanttType) => {
       setMyGanttType(type);
