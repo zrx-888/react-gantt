@@ -47,7 +47,6 @@ const GanttTime: React.FC<{
   const [yaerList, setYaerList] = useState<YearListIF[]>([]);
   const [days, setDays] = useState<YearListIF[]>([]);
   const [data, setData] = useState<IListIF[]>([]);
-  const [ganttProgressBarId, setGanttProgressBarId] = useState("");
   const bodyContentRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [headWidth, setHeadWidth] = useState(0);
@@ -226,9 +225,6 @@ const GanttTime: React.FC<{
     initList(newlist);
   };
 
-  const handleMouseEnter = (id: string) => {
-    setGanttProgressBarId(id);
-  };
   // 初始数组的处理
   const initList = (list: IListIF[]) => {
     let isOvertime = false;
@@ -345,10 +341,6 @@ const GanttTime: React.FC<{
     resetSize(maxMinDate, listTime);
   };
 
-  const handleMouseLeave = () => {
-    setGanttProgressBarId("");
-  };
-
   const handleScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
     document.getElementsByClassName(
       "gantt-right-body-head"
@@ -411,9 +403,6 @@ const GanttTime: React.FC<{
               item={item}
               index={index}
               showLine={showLine}
-              ganttProgressBarId={ganttProgressBarId}
-              onMouseEnter={handleMouseEnter}
-              handleMouseLeave={handleMouseLeave}
             />
           ) : item.isParent ? (
             <Parent
@@ -421,11 +410,8 @@ const GanttTime: React.FC<{
               item={item}
               index={index}
               showLine={showLine}
-              ganttProgressBarId={ganttProgressBarId}
               statusList={statusList}
-              onMouseEnter={handleMouseEnter}
               onClickText={onClickText}
-              handleMouseLeave={handleMouseLeave}
             />
           ) : (
             <></>
@@ -433,7 +419,7 @@ const GanttTime: React.FC<{
         })}
       </>
     );
-  }, [data, ganttProgressBarId]);
+  }, [data]);
 
   const Placeholder = useMemo(() => {
     return (

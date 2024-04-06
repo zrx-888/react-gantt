@@ -181,9 +181,9 @@ const list: GanttDataProps[] = [
       },
 
       {
-        start: false,
-        startTime: "2024-04-13 09:00:00",
-        endTime: "2024-04-15 17:00:00",
+        start: true,
+        startTime: "2024-03-31 00:00:00",
+        endTime: "2024-04-01 11:16:03",
         finishTime: null,
         dept: "前端手收尸",
         num: "2人",
